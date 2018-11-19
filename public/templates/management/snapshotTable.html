@@ -1,0 +1,89 @@
+<div class="kuiControlledTable" ng-controller="snapshotTableController as tableCtrl">
+
+    <!-- ToolBar -->
+    <div class="kuiToolBar">
+        <div class="kuiToolBarSearch">
+            <div class="kuiToolBarSearchBox">
+                <div class="kuiToolBarSearchBox__icon kuiIcon fa-search"></div>
+                <input class="kuiToolBarSearchBox__input" type="text" placeholder="Search..." ng-model="tableCtrl.optionTable.searchWord" ng-change="tableCtrl.optionTable.index = 0">
+            </div>
+        </div>
+
+        <div class="kuiToolBarSection" >
+            <button class="kuiButton kuiButton--primary" ng-click="restore()" ng-disabled="snapshotSelected == ''">
+                Restore
+            </button>
+            <button class="kuiButton kuiButton--danger" ng-click="delete()" ng-disabled="snapshotSelected == ''">
+                Delete
+            </button>
+        </div>
+
+        <div class="kuiToolBarSection">
+            <div class="kuiToolBarText">
+                {{tableCtrl.optionTable.index * tableCtrl.optionTable.numberDisplay + 1}} &ndash; {{tableCtrl.optionTable.len() > (tableCtrl.optionTable.index + 1) * tableCtrl.optionTable.numberDisplay ? (tableCtrl.optionTable.index + 1) * tableCtrl.optionTable.numberDisplay : tableCtrl.optionTable.len()}} of {{tableCtrl.optionTable.len()}}
+            </div>
+
+            <div class="kuiButtonGroup kuiButtonGroup--united">
+                <button class="kuiButton kuiButton--basic kuiButton--icon" ng-click="tableCtrl.optionTable.previous()">
+                    <span class="kuiButton__icon kuiIcon fa-chevron-left"></span>
+                </button>
+                <button class="kuiButton kuiButton--basic kuiButton--icon"  ng-click="tableCtrl.optionTable.next()">
+                    <span class="kuiButton__icon kuiIcon fa-chevron-right"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <table class="kuiTable">
+        <thead>
+            <tr>
+                <th class="kuiTableHeaderCell kuiTableHeaderCell--checkBox">
+                </th>
+                <th class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.optionTable.sortName = 'name'; tableCtrl.optionTable.sortReverse = !tableCtrl.optionTable.sortReverse; tableCtrl.optionTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">System
+                    Name
+                    <span ng-show="tableCtrl.optionTable.sortName == 'name' && tableCtrl.optionTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.optionTable.sortName == 'name' && !tableCtrl.optionTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th title="local time" class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.optionTable.sortName = 'date'; tableCtrl.optionTable.sortReverse = !tableCtrl.optionTable.sortReverse; tableCtrl.optionTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">System
+                    Date
+                    <span ng-show="tableCtrl.optionTable.sortName == 'date' && tableCtrl.optionTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.optionTable.sortName == 'date' && !tableCtrl.optionTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+            </tr>
+          </thead>
+
+        <tbody>
+            <tr ng-repeat="item in itemlist | orderBy:tableCtrl.optionTable.sortName:tableCtrl.optionTable.sortReverse | filter:{name:tableCtrl.optionTable.searchWord} as resultsHist" ng-show="tableCtrl.optionTable.show($index)" class="kuiTableRow" >
+                <td class="kuiTableRowCell kuiTableRowCell--checkBox">
+                    <div class="kuiTableRowCell__liner">
+                        <input type="checkbox" class="kuiCheckBox" ng-click="select(item.name)" ng-disabled="snapshotSelected != '' && snapshotSelected != item.name">
+                    </div>
+                </td>
+
+                <td class="kuiTableRowCell">
+                   <div class="kuiTableRowCell__liner">
+                       {{item.name}}
+                   </div>
+                </td>
+                <td class="kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner" title="{{item.date}}">
+                      {{item.date | moment}}
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- NoItems -->
+    <div class="kuiPanel kuiPanel--centered kuiPanel--withToolBar" ng-if="resultsHist.length === 0">
+        <div class="kuiTableInfo">
+            {{alertMessage || "No Items matched your search."}}
+        </div>
+    </div>
+
+</div>

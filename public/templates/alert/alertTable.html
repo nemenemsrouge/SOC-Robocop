@@ -1,0 +1,196 @@
+<!-- TABLE ALERT -->
+<div class="kuiControlledTable" ng-controller="robocopAlertTableController as tableCtrl">
+
+    <!-- ToolBar -->
+    <div class="kuiToolBar">
+        <div class="kuiToolBarSearch">
+            <div class="kuiToolBarSearchBox">
+                <div class="kuiToolBarSearchBox__icon kuiIcon fa-search"></div>
+                <input class="kuiToolBarSearchBox__input" type="text" placeholder="Search..." ng-model="tableCtrl.alertTable.searchWord" ng-change="tableCtrl.alertTable.index = 0">
+            </div>
+        </div>
+
+        <div class="kuiToolBarSection">
+          <button class="kuiButton kuiButton--primary" ng-click="filterPannel = !filterPannel">
+            Filter
+          </button>
+          <button class="kuiButton kuiButton--primary" ng-click="tableCtrl.newAlert()">
+            New
+          </button>
+        </div>
+
+        <div class="kuiToolBarSection">
+            <div class="kuiToolBarText">
+                {{tableCtrl.alertTable.index * tableCtrl.alertTable.numberDisplay + 1}} &ndash; {{tableCtrl.alertTable.len() > (tableCtrl.alertTable.index + 1) * tableCtrl.alertTable.numberDisplay ? (tableCtrl.alertTable.index + 1) * tableCtrl.alertTable.numberDisplay : tableCtrl.alertTable.len()}} of {{tableCtrl.alertTable.len()}}
+            </div>
+
+            <div class="kuiButtonGroup kuiButtonGroup--united">
+                <button class="kuiButton kuiButton--basic kuiButton--icon" ng-click="tableCtrl.alertTable.previous()">
+                    <span class="kuiButton__icon kuiIcon fa-chevron-left"></span>
+                </button>
+                <button class="kuiButton kuiButton--basic kuiButton--icon"  ng-click="tableCtrl.alertTable.next()">
+                    <span class="kuiButton__icon kuiIcon fa-chevron-right"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter panel -->
+    <div class="kuiPanel" ng-show="filterPannel">
+      <div class="kuiPanelBody">
+        <div class="kuiVerticalRhythm">Category
+          <div class="kuiMenuButtonGroup">
+            <a ng-repeat="cat in filterCategories" class="kuiMenuButton" ng-class="{true: 'kuiMenuButton--primary', false: 'kuiMenuButton--basic'}[cat.filter]" ng-click="cat.filter = !cat.filter">{{cat.name}}</a>
+          </div>
+        </div>
+        <div class="kuiVerticalRhythm">Severity
+          <div class="kuiMenuButtonGroup">
+            <a ng-repeat="sev in filterSeverities" class="kuiMenuButton" ng-class="{true: 'kuiMenuButton--primary', false: 'kuiMenuButton--basic'}[sev.filter]" ng-click="sev.filter = !sev.filter">{{sev.name}}</a>
+          </div>
+        </div>
+        <div class="kuiVerticalRhythm">Status
+          <div class="kuiMenuButtonGroup kuiVerticalRhythm">
+            <a ng-repeat="status in filterStatus" class="kuiMenuButton" ng-class="{true: 'kuiMenuButton--primary', false: 'kuiMenuButton--basic'}[status.filter]" ng-click="status.filter = !status.filter">{{status.name}}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END Filter panel -->
+
+    <!-- Table -->
+    <table class="kuiTable">
+        <thead>
+            <tr>
+                <th class="kuiTableHeaderCell kuiTableHeaderCell--sortable" style="width:70px; min-width: 70px" ng-click="tableCtrl.alertTable.sortName = 'number'; tableCtrl.alertTable.sortReverse = !tableCtrl.alertTable.sortReverse; tableCtrl.alertTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">#
+                    <span ng-show="tableCtrl.alertTable.sortName == 'number' && tableCtrl.alertTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.alertTable.sortName == 'number' && !tableCtrl.alertTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th style="width:400px; max-width:300px" class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.alertTable.sortName = 'title'; tableCtrl.alertTable.sortReverse = !tableCtrl.alertTable.sortReverse; tableCtrl.alertTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">  Title
+                    <span ng-show="tableCtrl.alertTable.sortName == 'title' && tableCtrl.alertTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.alertTable.sortName == 'title' && !tableCtrl.alertTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th style="" class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.alertTable.sortName = 'category'; tableCtrl.alertTable.sortReverse = !tableCtrl.alertTable.sortReverse; tableCtrl.alertTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Category
+                    <span ng-show="tableCtrl.alertTable.sortName == 'category' && tableCtrl.alertTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.alertTable.sortName == 'category' && !tableCtrl.alertTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th style="" class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.alertTable.sortName = 'level'; tableCtrl.alertTable.sortReverse = !tableCtrl.alertTable.sortReverse; tableCtrl.alertTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Severity
+                    <span ng-show="tableCtrl.alertTable.sortName == 'level' && tableCtrl.alertTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.alertTable.sortName == 'level' && !tableCtrl.alertTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th style="width:100px; max-width:100px" class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.alertTable.sortName = 'status'; tableCtrl.alertTable.sortReverse = !tableCtrl.alertTable.sortReverse; tableCtrl.alertTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Status
+                    <span ng-show="tableCtrl.alertTable.sortName == 'status' && tableCtrl.alertTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.alertTable.sortName == 'status' && !tableCtrl.alertTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th class="hidden-xs kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.alertTable.sortName = 'periodicity'; tableCtrl.alertTable.sortReverse = !tableCtrl.alertTable.sortReverse; tableCtrl.alertTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Periodicity
+                    <span ng-show="tableCtrl.alertTable.sortName == 'periodicity' && tableCtrl.alertTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.alertTable.sortName == 'periodicity' && !tableCtrl.alertTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th class="hidden-xs kuiTableHeaderCell">
+                  <span class="kuiTableHeaderCell__liner">
+                    Period
+                  </span>
+                </th>
+                <th class="hidden-md hidden-sm kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.alertTable.sortName = 'createdDate'; tableCtrl.alertTable.sortReverse = !tableCtrl.alertTable.sortReverse; tableCtrl.alertTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Date created
+                    <span ng-show="tableCtrl.alertTable.sortName == 'createdDate' && tableCtrl.alertTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.alertTable.sortName == 'createdDate' && !tableCtrl.alertTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th class="hidden-md hidden-sm kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.alertTable.sortName = 'modifiedDate'; tableCtrl.alertTable.sortReverse = !tableCtrl.alertTable.sortReverse; tableCtrl.alertTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Date last modified
+                    <span ng-show="tableCtrl.alertTable.sortName == 'modifiedDate' && tableCtrl.alertTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.alertTable.sortName == 'modifiedDate' && !tableCtrl.alertTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr ng-repeat="alert in tableCtrl.alerts | orderBy:tableCtrl.sortTable:tableCtrl.alertTable.sortReverse | filter:filterFn as results" ng-show="tableCtrl.alertTable.show($index)" class="kuiTableRow" >
+                <td class="kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner">
+                        {{alert.number}}
+                    </div>
+                </td>
+                <td class="kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner">
+                        <a class="kuiLink" title="{{alert.title}} &#xA; &#xA;{{alert.description}}" href="#/alert/edit/{{alert.id}}">{{alert.title}}</a>
+                    </div>
+                </td>
+                <td class="kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner">
+                        {{alert.category}}
+                    </div>
+                </td>
+                <td class="kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner" style="color:{{level[alert.level]}}">
+                        {{alert.level}}
+                    </div>
+                </td>
+                <td class="kuiTableRowCell">
+                    <div class="kuiIcon kuiIcon--success fa-check" ng-show="alert.status" title="Alert enabled"></div>
+                    <div class="kuiIcon kuiIcon--error fa-warning" ng-show="!alert.status" title="Alert disabled"></div>
+
+                    <div class="kuiIcon kuiIcon--info fa-cogs" ng-show="alert.script" title="Script configured"></div>
+                    <div class="kuiIcon kuiIcon--inactive fa-cogs" ng-show="!alert.script" title="Script configured"></div>
+
+                    <div class="kuiIcon kuiIcon--basic fa-envelope" ng-show="alert.mail" title="Message mail"></div>
+                    <div class="kuiIcon kuiIcon--inactive fa-envelope" ng-show="!alert.mail" title="Message mail"></div>
+
+                    <div class="kuiIcon kuiIcon--basic fa-slack" ng-show="alert.slack" title="Message slack"></div>
+                    <div class="kuiIcon kuiIcon--inactive fa-slack" ng-show="!alert.slack" title="Message slack"></div>
+
+                    <div class="kuiIcon kuiIcon--basic fa-user" ng-show="alert.marvin" title="Message Marvin"></div>
+                    <div class="kuiIcon kuiIcon--inactive fa-user" ng-show="!alert.marvin" title="Message Marvin"></div>
+                </td>
+                <td class="hidden-xs kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner">
+                        {{alert.periodicity}}
+                    </div>
+                </td>
+                <td class="hidden-xs kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner">
+                        <span ng-bind-html="alert.period | period"></span>
+                    </div>
+                </td>
+                <td class="hidden-md hidden-sm kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner" title="{{alert.createdDate}}">
+                        {{alert.createdDate | moment}}
+                    </div>
+                </td>
+                <td class="hidden-md hidden-sm kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner" title="{{alert.modifiedDate}}">
+                        {{alert.modifiedDate | moment}}
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- NoItems -->
+    <div class="kuiPanel kuiPanel--centered kuiPanel--withToolBar" ng-if="results.length === 0">
+        <div class="kuiTableInfo">
+             No Items matched your search.
+        </div>
+    </div>
+
+</div>
+<!-- END TABLE ALERT -->

@@ -1,0 +1,82 @@
+<div class="kuiControlledTable" ng-controller="historyTableController as tableCtrl">
+
+    <!-- ToolBar -->
+    <div class="kuiToolBar">
+        <div class="kuiToolBarSearch">
+            <div class="kuiToolBarSearchBox">
+                <div class="kuiToolBarSearchBox__icon kuiIcon fa-search"></div>
+                <input class="kuiToolBarSearchBox__input" type="text" placeholder="Search..." ng-model="tableCtrl.historyTable.searchWord" ng-change="tableCtrl.historyTable.index = 0">
+            </div>
+        </div>
+
+        <div class="kuiToolBarSection">
+            <div class="kuiToolBarText">
+                {{tableCtrl.historyTable.index * tableCtrl.historyTable.numberDisplay + 1}} &ndash; {{tableCtrl.historyTable.len() > (tableCtrl.historyTable.index + 1) * tableCtrl.historyTable.numberDisplay ? (tableCtrl.historyTable.index + 1) * tableCtrl.historyTable.numberDisplay : tableCtrl.historyTable.len()}} of {{tableCtrl.historyTable.len()}}
+            </div>
+
+            <div class="kuiButtonGroup kuiButtonGroup--united">
+                <button class="kuiButton kuiButton--basic kuiButton--icon" ng-click="tableCtrl.historyTable.previous()">
+                    <span class="kuiButton__icon kuiIcon fa-chevron-left"></span>
+                </button>
+                <button class="kuiButton kuiButton--basic kuiButton--icon"  ng-click="tableCtrl.historyTable.next()">
+                    <span class="kuiButton__icon kuiIcon fa-chevron-right"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <table class="kuiTable">
+        <thead>
+            <tr>
+                <th style="width:300px; max-width:300px" class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.historyTable.sortName = 'alertTitle'; tableCtrl.historyTable.sortReverse = !tableCtrl.historyTable.sortReverse; tableCtrl.historyTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Title
+                    <span ng-show="tableCtrl.historyTable.sortName == 'alertTitle' && tableCtrl.historyTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.historyTable.sortName == 'alertTitle' && !tableCtrl.historyTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.historyTable.sortName = 'alertDate'; tableCtrl.historyTable.sortReverse = !tableCtrl.historyTable.sortReverse; tableCtrl.historyTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Date
+                    <span ng-show="tableCtrl.historyTable.sortName == 'alertDate' && tableCtrl.historyTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.historyTable.sortName == 'alertDate' && !tableCtrl.historyTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th style="width:60%" class="hidden-xs hidden-sm kuiTableHeaderCell">
+                  <span class="kuiTableHeaderCell__liner">
+                    Description
+                  </span>
+                </th>
+            </tr>
+          </thead>
+
+        <tbody>
+            <tr ng-repeat="item in tableCtrl.history | orderBy:tableCtrl.historyTable.sortName:tableCtrl.historyTable.sortReverse | filter:{alertTitle:tableCtrl.historyTable.searchWord} as resultsHist" ng-show="tableCtrl.historyTable.show($index)" class="kuiTableRow" >
+                <td class="kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner">
+                        <a class="kuiLink" href="#/history/edit/{{item.id}}">{{item.alertTitle}}</a>
+                        </div>
+                </td>
+                <td class="kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner" title="{{item.alertDate}}">
+                      {{item.alertDate | moment}}
+                    </div>
+                </td>
+                <td class="hidden-xs hidden-sm kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner">
+                        {{item.alertDescription}}
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- NoItems -->
+    <div class="kuiPanel kuiPanel--centered kuiPanel--withToolBar" ng-if="resultsHist.length === 0">
+        <div class="withToolBar">
+           No Items matched your search.
+        </div>
+    </div>
+
+</div>

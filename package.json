@@ -1,0 +1,30 @@
+{
+  "name": "robocop",
+  "version": "1.0.1",
+  "kibana": {
+    "version": "6.4.0"
+  },
+  "dependencies": {
+    "moment": "^2.22.2",
+    "nodemailer": "4.6.8",
+    "@slack/client": "4.6.0"
+  },
+  "devDependencies": {
+    "@elastic/eslint-config-kibana": "0.0.2",
+    "@elastic/plugin-helpers": "^6.0.0",
+    "babel-eslint": "4.1.8",
+    "chai": "^3.5.0",
+    "eslint": "1.10.3",
+    "eslint-plugin-mocha": "1.1.0",
+    "jest": "^23.4.0",
+    "jsdoc": "^3.4.3"
+  },
+  "scripts": {
+    "lint": "eslint",
+    "start": "plugin-helpers start",
+    "test:server": "plugin-helpers test:server",
+    "test:browser": "plugin-helpers test:browser",
+    "build": "plugin-helpers build",
+    "postinstall": "plugin-helpers postinstall"
+  }
+}

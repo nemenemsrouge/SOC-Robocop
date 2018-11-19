@@ -1,0 +1,464 @@
+<div ng-include="'../plugins/robocop/templates/menu.html'"></div>
+<br>
+
+<div class="container">
+    <div class="row kuiVerticalRhythm">
+        <div class="col-lg-6"> <!-- Backup -->
+
+            <div class="kuiHeaderBar kuiVerticalRhythm">
+                  <div class="kuiHeaderBarSection">
+                    <h2 class="kuiSubTitle">Backup</h2>
+                </div>
+                <div class="kuiHeaderBarSection">
+                    <div class="kuiIcon kuiIcon--info fa-info" ng-click="helpBackup = !helpBackup"></div>
+                </div>
+            </div>
+
+            <div class="kuiInfoPanel kuiInfoPanel--info kuiVerticalRhythm" ng-show="helpBackup">
+                <div class="kuiInfoPanelHeader">
+                    <span class="kuiInfoPanelHeader__icon kuiIcon kuiIcon--info fa-info"></span>
+                    <span class="kuiInfoPanelHeader__title">
+                      Backup info
+                    </span>
+                </div>
+
+                <div class="kuiInfoPanelBody">
+                    <div class="kuiInfoPanelBody__message">
+                        This option allows you to create a snapshot of plugin index to be able to restore data later.
+                    </div>
+                    <div class="kuiInfoPanelBody__message">
+                        <span class="kuiStatusText kuiStatusText--warning">
+                            Make sure that Elasticsearch has been configured to receive snapshots.
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row kuiVerticalRhythm">
+                <div class="col-lg-10">
+                    <input type="text" style="width:100%" class="kuiTextInput" placeholder="robocop_{{date.valueOf()}}" ng-model="nameSnapshotBck">
+                </div>
+                <div class="col-lg-2">
+                    <button class="kuiButton kuiButton--primary kuiVerticalRhythm" ng-click="backup()">Backup</button>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-lg-6"> <!-- Import -->
+            <div class="kuiHeaderBar kuiVerticalRhythm">
+                <div class="kuiHeaderBarSection">
+                    <h2 class="kuiSubTitle">Import / Export</h2>
+                </div>
+                <div class="kuiHeaderBarSection">
+                    <div class="kuiIcon kuiIcon--info fa-info" ng-click="helpExport = !helpExport"></div>
+                </div>
+            </div>
+
+            <div class="kuiInfoPanel kuiInfoPanel--info kuiVerticalRhythm" ng-show="helpExport">
+                <div class="kuiInfoPanelHeader">
+                    <span class="kuiInfoPanelHeader__icon kuiIcon kuiIcon--info fa-info"></span>
+                    <span class="kuiInfoPanelHeader__title">
+                      Import / Export info
+                    </span>
+                </div>
+
+                <div class="kuiInfoPanelBody">
+                    <div class="kuiInfoPanelBody__message">
+                        <strong>Import: </strong> Allows you to import file (generate with export) into the robocop index. Append the new alert/history/cron/config after the existant.
+                    </div>
+                    <div class="kuiInfoPanelBody__message">
+                        <strong>Export: </strong> Allows you to download all the robocop index.
+                    </div>
+                </div>
+            </div>
+
+
+            <button class="kuiButton kuiButton--basic kuiButton--iconText kuiVerticalRhythm" ng-click="export()">
+                <span class="kuiButton__icon kuiIcon fa-download"></span>
+                <span>Export</span>
+            </button>
+            <div class="kuiButtonGroup kuiButtonGroup--united kuiVerticalRhythm">
+                <button class="kuiButton kuiButton--basic kuiButton--iconText" ng-click="import()">
+                    <span class="kuiButton__icon kuiIcon fa-upload"></span>
+                    <span>Import  </span>
+                </button>
+                <input type="file" id="file" />
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row kuiVerticalRhythm"> <!-- Manage snapshot -->
+        <div class="col-lg-12">
+
+            <div class="kuiHeaderBar kuiVerticalRhythm">
+                <div class="kuiHeaderBarSection">
+                    <h2 class="kuiSubTitle"> Manage </h2>
+                </div>
+                <div class="kuiHeaderBarSection">
+                    <div class="kuiIcon kuiIcon--info fa-info" ng-click="helpRestore = !helpRestore"></div>
+                </div>
+            </div>
+
+            <div class="kuiInfoPanel kuiInfoPanel--info kuiVerticalRhythm" ng-show="helpRestore">
+                <div class="kuiInfoPanelBody">
+                    <div class="kuiInfoPanelHeader">
+                        <span class="kuiInfoPanelHeader__icon kuiIcon kuiIcon--info fa-info"></span>
+                        <span class="kuiInfoPanelHeader__title">
+                          Manage snapshot
+                        </span>
+                    </div>
+                    <div class="kuiInfoPanelBody__message">
+                        This part allows you to manage snapshots (manual and automatic). You can <strong>restore</strong> or <strong>delete</strong> a snapshot.
+                    </div>
+                    <div class="kuiInfoPanelBody__message">
+                        <span class="kuiStatusText kuiStatusText--warning">
+                            Be sure that the backup is compatible with the Elasticsearch version.
+                        </span>
+                    </div>
+                     <div class="kuiInfoPanelBody__message">
+                        <strong>Select a snapshot</strong> in the following table then click on the <strong>Restore</strong> button.
+                    </div>
+                </div>
+            </div>
+            <div ng-include="'../plugins/robocop/templates/management/snapshotTable.html'" class="kuiVerticalRhythm"></div>
+
+        </div>
+    </div>
+
+    <div class="row kuiVerticalRhythm"> <!-- Advanced option -->
+        <div class="col-lg-12">
+            <div class="kuiHeaderBar kuiVerticalRhythm">
+                <div class="kuiHeaderBarSection">
+                    <h2 class="kuiSubTitle">
+                        Advanced option
+                    </h2>
+                </div>
+            </div>
+
+            <!-- OPTION TABLE -->
+            <table class="kuiTable kuiVerticalRhythm">
+                <thead>
+                    <tr>
+                        <th class="kuiTableHeaderCell col-xs-5 col-sm-5">
+                          <span class="kuiTableHeaderCell__liner">
+                            Name
+                          </span>
+                        </th>
+                        <th class="kuiTableHeaderCell col-xs-4 col-sm-5">
+                          <span class="kuiTableHeaderCell__liner">
+                            Value
+                          </span>
+                        </th>
+                        <th class="kuiTableHeaderCell col-xs-3 col-sm-2">
+                          <span class="kuiTableHeaderCell__liner">
+                            Actions <span aria-label="Edit or restore the default value." class="kuiIcon kuiIcon--info fa-info" title="Edit or restore the default value."></span>
+                          </span>
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr class="kuiTableRow"> <!-- snapshot:periodicity -->
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <strong>snapshot:periodicity</strong> <small>(Default: never)</small>
+                                <br><small>Allow Robotcop to take snapshot regularly. Each snapshot is named "rcss_[date]"</small>
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <select ng-model="snapshotPeriodicity" ng-disabled="!snapshotPeriodicityCheck" class="kuiSelect fullWidth">
+                                    <option>never</option>
+                                    <option>every 1 day</option>
+                                    <option>every 1 week</option>
+                                    <option>every 2 weeks</option>
+                                    <option>every 1 month</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <button ng-click="snapshotPeriodicityCheck = true" ng-show="!snapshotPeriodicityCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-pencil"></span>
+                                </button>
+                                <button ng-click="saveconfig('snapshotPeriodicity', snapshotPeriodicity)" ng-show="snapshotPeriodicityCheck" class="kuiButton kuiButton--primary">
+                                    <span class="kuiButton__icon kuiIcon fa-save"></span>
+                                </button>
+                                <button ng-click="saveconfig('snapshotPeriodicity', 'never')" ng-show="!snapshotPeriodicityCheck && snapshotPeriodicity != 'never'" class="kuiButton kuiButton--danger">
+                                    <span class="kuiButton__icon kuiIcon fa-trash-o"></span>
+                                </button>
+                                <button ng-click="snapshotPeriodicityCheck = false; snapshotPeriodicity = snapshotPeriodicitySave" ng-show="snapshotPeriodicityCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-times"></span>
+                                </button>l
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="kuiTableRow"> <!-- snapshot:history -->
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <strong>snapshot:history</strong>  <small>(Default: 0)</small>
+                                <br><small>Delete automaticaly old automatic snapshot. 0 => no limit.</small>
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <input type="number" ng-model="snapshotHistory" ng-disabled="!snapshotHistoryCheck" class="kuiTextInput fullWidth">
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <button ng-click="snapshotHistoryCheck = true" ng-show="!snapshotHistoryCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-pencil"></span>
+                                </button>
+                                <button ng-click="saveconfig('snapshotHistory', snapshotHistory)" ng-show="snapshotHistoryCheck" class="kuiButton kuiButton--primary">
+                                    <span class="kuiButton__icon kuiIcon fa-save"></span>
+                                </button>
+                                <button ng-click="saveconfig('snapshotHistory', 0)" ng-show="!snapshotHistoryCheck && snapshotHistory != 0" class="kuiButton kuiButton--danger">
+                                    <span class="kuiButton__icon kuiIcon fa-trash-o"></span>
+                                </button>
+                                <button ng-click="snapshotHistoryCheck = false; snapshotHistory = snapshotHistorySave" ng-show="snapshotHistoryCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-times"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="kuiTableRow"> <!-- history:history -->
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <strong>history:history</strong>  <small>(Default: 0)</small>
+                                <br><small>Delete automaticaly old hystory. 0 => no limit.</small>
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <input type="number" ng-model="historyHistory" class="kuiTextInput fullWidth" ng-disabled="!historyHistoryCheck">
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <button ng-click="historyHistoryCheck = true" ng-show="!historyHistoryCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-pencil"></span>
+                                </button>
+                                <button ng-click="saveconfig('historyHistory', historyHistory)" ng-show="historyHistoryCheck" class="kuiButton kuiButton--primary">
+                                    <span class="kuiButton__icon kuiIcon fa-save"></span>
+                                </button>
+                                <button ng-click="saveconfig('historyHistory', 0)" ng-show="!historyHistoryCheck && historyHistory != 0" class="kuiButton kuiButton--danger">
+                                    <span class="kuiButton__icon kuiIcon fa-trash-o"></span>
+                                </button>
+                                <button ng-click="historyHistoryCheck = false; historyHistory = historyHistorySave" ng-show="historyHistoryCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-times"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="kuiTableRow"> <!-- log:history -->
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <strong>log:history</strong>  <small>(Default: 0)</small>
+                                <br><small>Delete automaticaly oldest log (in days). 0 => no limit.</small>
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <input type="number" ng-model="logHistory" ng-disabled="!logHistoryCheck " class="kuiTextInput fullWidth">
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <button ng-click="logHistoryCheck = true" ng-show="!logHistoryCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-pencil"></span>
+                                </button>
+                                <button ng-click="saveconfig('logHistory', logHistory)" ng-show="logHistoryCheck" class="kuiButton kuiButton--primary">
+                                    <span class="kuiButton__icon kuiIcon fa-save"></span>
+                                </button>
+                                <button ng-click="saveconfig('logHistory', 0)" ng-show="!logHistoryCheck && logHistory != 0" class="kuiButton kuiButton--danger">
+                                    <span class="kuiButton__icon kuiIcon fa-trash-o"></span>
+                                </button>
+                                <button ng-click="logHistoryCheck = false; logHistory = logHistorySave" ng-show="logHistoryCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-times"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="kuiTableRow"> <!-- alert:category -->
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <strong>alert:category</strong>  <small></small>
+                                <br><small>List of category.</small>
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <input type="text" ng-model="alertCategory" class="kuiTextInput fullWidth" ng-disabled="!alertCategoryCheck">
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <button ng-click="alertCategoryCheck = true" ng-show="!alertCategoryCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-pencil"></span>
+                                </button>
+                                <button ng-click="saveconfig('alertCategory', alertCategory, true)" ng-show="alertCategoryCheck" class="kuiButton kuiButton--primary">
+                                    <span class="kuiButton__icon kuiIcon fa-save"></span>
+                                </button>
+                                <button ng-click="saveconfig('alertCategory', '')" ng-show="!alertCategoryCheck && alertCategory != ''" class="kuiButton kuiButton--danger">
+                                    <span class="kuiButton__icon kuiIcon fa-trash-o"></span>
+                                </button>
+                                <button ng-click="alertCategoryCheck = false; alertCategory = alertCategorySave" ng-show="alertCategoryCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-times"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="kuiTableRow"> <!-- alert:level -->
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <strong>alert:level</strong>  <small>name:color</small>
+                                <br><small>List of criticity.</small>
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <input type="text" ng-model="alertLevel" class="kuiTextInput fullWidth" ng-disabled="!alertLevelCheck" pattern="^(\w+(:[\w#]+)?\s*,\s*)*\w+(:[\w#]+)?$">
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <button ng-click="alertLevelCheck = true" ng-show="!alertLevelCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-pencil"></span>
+                                </button>
+                                <button ng-click="saveconfig('alertLevel', alertLevel, true, '^(\\w+(:[\\w#]+)?\\s*,\\s*)*\\w+(:[\\w#]+)?$')" ng-show="alertLevelCheck" class="kuiButton kuiButton--primary">
+                                    <span class="kuiButton__icon kuiIcon fa-save"></span>
+                                </button>
+                                <button ng-click="saveconfig('alertLevel', '')" ng-show="!alertLevelCheck && alertLevel != ''" class="kuiButton kuiButton--danger">
+                                    <span class="kuiButton__icon kuiIcon fa-trash-o"></span>
+                                </button>
+                                <button ng-click="alertLevelCheck = false; alertLevel = alertLevelSave" ng-show="alertLevelCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-times"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="kuiTableRow"> <!-- cron:category -->
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <strong>cron:category</strong>  <small></small>
+                                <br><small>List of category for the crons.</small>
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <input type="text" ng-model="cronCategory" class="kuiTextInput fullWidth" ng-disabled="!cronCategoryCheck">
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <button ng-click="cronCategoryCheck = true" ng-show="!cronCategoryCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-pencil"></span>
+                                </button>
+                                <button ng-click="saveconfig('cronCategory', cronCategory, true)" ng-show="cronCategoryCheck" class="kuiButton kuiButton--primary">
+                                    <span class="kuiButton__icon kuiIcon fa-save"></span>
+                                </button>
+                                <button ng-click="saveconfig('cronCategory', '')" ng-show="!cronCategoryCheck && cronCategory != ''" class="kuiButton kuiButton--danger">
+                                    <span class="kuiButton__icon kuiIcon fa-trash-o"></span>
+                                </button>
+                                <button ng-click="cronCategoryCheck = false; cronCategory = cronCategorySave" ng-show="cronCategoryCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-times"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="kuiTableRow"> <!-- worker:day -->
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <strong>worker:day</strong><small>(mon,tue,wed,thu,fri,sat,sun)</small>
+                                <br><small>List of working days.</small>
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <input type="text" ng-model="workerDay" class="kuiTextInput fullWidth" ng-disabled="!workerDayCheck" pattern="^(((mon|tue|wed|thu|fri|sat|sun),)*(mon|tue|wed|thu|fri|sat|sun))$|$">
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <button ng-click="workerDayCheck = true" ng-show="!workerDayCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-pencil"></span>
+                                </button>
+                                <button ng-click="saveconfig('workerDay', workerDay, true, '^(((mon|tue|wed|thu|fri|sat|sun),)*(mon|tue|wed|thu|fri|sat|sun))$|$')" ng-show="workerDayCheck" class="kuiButton kuiButton--primary">
+                                    <span class="kuiButton__icon kuiIcon fa-save"></span>
+                                </button>
+                                <button ng-click="saveconfig('workerDay', '')" ng-show="!workerDayCheck && workerDay != ''" class="kuiButton kuiButton--danger">
+                                    <span class="kuiButton__icon kuiIcon fa-trash-o"></span>
+                                </button>
+                                <button ng-click="workerDayCheck = false; workerDay = workerDaySave" ng-show="workerDayCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-times"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="kuiTableRow"> <!-- worker:time -->
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <strong>worker:time</strong><small>(hh:mm-hh:mm)</small>
+                                <br><small>Working hours.</small>
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <input type="text" ng-model="workerTime" class="kuiTextInput fullWidth" ng-disabled="!workerTimeCheck" pattern="^(?:[01]\d|2[0-3]):[0-5]\d-(?:[01]\d|2[0-3]):[0-5]\d$">
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <button ng-click="workerTimeCheck = true" ng-show="!workerTimeCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-pencil"></span>
+                                </button>
+                                <button ng-click="saveconfig('workerTime', workerTime, false, '^(?:[01]\\d|2[0-3]):[0-5]\\d-(?:[01]\\d|2[0-3]):[0-5]\\d$')" ng-show="workerTimeCheck" class="kuiButton kuiButton--primary">
+                                    <span class="kuiButton__icon kuiIcon fa-save"></span>
+                                </button>
+                                <button ng-click="saveconfig('workerTime', '')" ng-show="!workerTimeCheck && workerTime != ''" class="kuiButton kuiButton--danger">
+                                    <span class="kuiButton__icon kuiIcon fa-trash-o"></span>
+                                </button>
+                                <button ng-click="workerTimeCheck = false; workerTime = workerTimeSave" ng-show="workerTimeCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-times"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="kuiTableRow"> <!-- worker:off -->
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <strong>worker:off</strong><small>(dd/mm/yyyy or dd/mm)</small>
+                                <br><small>Days off</small>
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <input type="text" ng-model="workerOff" class="kuiTextInput fullWidth" ng-disabled="!workerOffCheck" pattern="^((?:[0-2]\d|3[0-1])/(?:[0]\d|1[0-2])(/\d\d\d\d)?\s*,\s*)*(?:[0-2]\d|3[0-1])/(?:[0]\d|1[0-2])(/\d\d\d\d)?$">
+                            </div>
+                        </td>
+                        <td class="kuiTableRowCell">
+                            <div class="kuiTableRowCell__liner">
+                                <button ng-click="workerOffCheck = true" ng-show="!workerOffCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-pencil"></span>
+                                </button>
+                                <button ng-click="saveconfig('workerOff', workerOff, true, '^((?:[0-2]\\d|3[0-1])/(?:[0]\\d|1[0-2])(/\\d\\d\\d\\d)?\\s*,\\s*)*(?:[0-2]\\d|3[0-1])/(?:[0]\\d|1[0-2])(/\\d\\d\\d\\d)?')" ng-show="workerOffCheck" class="kuiButton kuiButton--primary">
+                                    <span class="kuiButton__icon kuiIcon fa-save"></span>
+                                </button>
+                                <button ng-click="saveconfig('workerOff', '')" ng-show="!workerOffCheck && workerOff != ''" class="kuiButton kuiButton--danger">
+                                    <span class="kuiButton__icon kuiIcon fa-trash-o"></span>
+                                </button>
+                                <button ng-click="workerOffCheck = false; workerOff = workerOffSave" ng-show="workerOffCheck" class="kuiButton kuiButton--basic">
+                                    <span class="kuiButton__icon kuiIcon fa-times"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- END OPTION TABLE -->
+
+        </div>
+    </div>
+</div>

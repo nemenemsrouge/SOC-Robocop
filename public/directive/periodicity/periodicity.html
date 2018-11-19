@@ -1,0 +1,152 @@
+<div class="kuiPanel kuiVerticalRhythm">
+  <div class="kuiPanelHeader">
+    <div class="kuiPanelHeaderSection">
+      <div class="kuiPanelHeader__title">
+        Scheduler
+      </div>
+    </div>
+  </div>
+
+  <div class="kuiPanelBody">
+
+    <!-- PERIODICITY  -->
+    <div class="kuiFieldGroup kuiVerticalRhythm">
+      <div class="kuiFieldGroupSection">
+        <label class="kuiLabel" for="periodicity"> Every: </label>
+        <select id="periodicity" class="kuiSelect" ng-model="period.periodicity">
+          <option value="1 minutes"> 1 minute </option>
+          <option value="10 minutes"> 10 minutes </option>
+          <option value="30 minnutes"> 30 minutes </option>
+          <option value="1 hours"> 1 hour </option>
+          <option value="2 hours"> 2 hours </option>
+          <option value="1 days"> 1 day </option>
+          <option value="7 days"> 1 week </option>
+          <option value="1 months"> 1 month </option>
+        </select>
+      </div>
+      <div class="kuiFieldGroupSection" ng-show="period.periodicity == '7 days'">
+        <label class="kuiLabel" for="dayWeek"> The </label>
+        <select id="dayWeek" class="kuiSelect" ng-model="period.dayName">
+          <option>Monday</option>
+          <option>Tuesday</option>
+          <option>Wednesday</option>
+          <option>Thursday</option>
+          <option>Friday</option>
+          <option>Saturday</option>
+          <option>Sunday</option>
+        </select>
+      </div>
+      <div class="kuiFieldGroupSection" for="dayMonth" ng-show="period.periodicity == '1 months'">
+        <label class="kuiLabel" for="" > The </label>
+        <input id="dayMonth" type="number" class="kuiTextInput" min="1" max="31" placeholder="01" ng-model="period.dayNbr">
+      </div>
+      <div class="kuiFieldGroupSection" ng-show="period.periodicity == '1 days' || period.periodicity == '7 days' || period.periodicity == '1 months'">
+        <label class="kuiLabel" for="time"> at </label>
+        <input id="time" type="time" class="kuiTextInput" ng-model="period.time" value="13:30">
+      </div>
+    </div>
+    <!-- END DETAIL -->
+
+    <!-- STANDBY -->
+    <div class="kuiFieldGroup kuiVerticalRhythm">
+      <div class="kuiFieldGroupSection">
+        <label class="kuiCheckBoxLabel" title="Working Hours">
+          <input type="radio" class="kuiCheckBox" ng-model="period.type" value="wh">
+          <span class="kuiCheckBoxLabel__text">WH</span>
+        </label>
+      </div>
+      <div class="kuiFieldGroupSection">
+        <label class="kuiCheckBoxLabel" title="Non-Working Hours">
+          <input type="radio" class="kuiCheckBox" ng-model="period.type" value="nwh">
+          <span class="kuiCheckBoxLabel__text">NWH</span>
+        </label>
+      </div>
+      <div class="kuiFieldGroupSection">
+        <label class="kuiCheckBoxLabel">
+          <input type="radio" class="kuiCheckBox" ng-model="period.type" value="custom">
+          <span class="kuiCheckBoxLabel__text">Custom</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="kuiPanel kuiVerticalRhythm" ng-show="period.type == 'wh'">
+      <div class="kuiPanelBody">
+        <p>
+          {{workingPeriod.days.join(", ")}}<br>
+          {{workingPeriod.hours}}
+        </p>
+      </div>
+    </div>
+    <div class="kuiPanel kuiVerticalRhythm" ng-show="period.type == 'nwh'">
+      <div class="kuiPanelBody">
+        <p>Monday, Tuesday, Wednesday, Thurday, Friday, Saturday, Sunday</p>
+        <p>00:00 - 23:59</p>
+      </div>
+    </div>
+    <div class="kuiPanel kuiVerticalRhythm" ng-show="period.type == 'custom'">
+      <div class="kuiPanelBody">
+        <div class="kuiFieldGroup kuiVerticalRhythm">
+          <div class="kuiFieldGroupSection">
+            <label class="kuiCheckBoxLabel">
+              <input type="checkbox" class="kuiCheckBox" ng-model="period.enabled">
+              <span class="kuiCheckBoxLabel__text"> Active period</span>
+            </label>
+          </div>
+          <div class="kuiFieldGroupSection">
+             : from
+             <input type="time" ng-model="period.start" class="kuiTextInput" placeholder="hh:mm"> to
+             <input type="time" ng-model="period.end" class="kuiTextInput" placeholder="hh:mm">
+          </div>
+        </div>
+
+        <div class="kuiFieldGroup kuiVerticalRhythm">
+          <div class="kuiFieldGroupSection">
+            <label class="kuiCheckBoxLabel">
+              <input type="checkbox" class="kuiCheckBox" ng-model="period.days[1]">
+              <span class="kuiCheckBoxLabel__text">Monday</span>
+            </label>
+          </div>
+          <div class="kuiFieldGroupSection">
+            <label class="kuiCheckBoxLabel">
+              <input type="checkbox" class="kuiCheckBox" ng-model="period.days[2]">
+              <span class="kuiCheckBoxLabel__text">Tuesday</span>
+            </label>
+          </div>
+          <div class="kuiFieldGroupSection">
+            <label class="kuiCheckBoxLabel">
+              <input type="checkbox" class="kuiCheckBox" ng-model="period.days[3]">
+              <span class="kuiCheckBoxLabel__text">Wednesday</span>
+            </label>
+          </div>
+          <div class="kuiFieldGroupSection">
+            <label class="kuiCheckBoxLabel">
+              <input type="checkbox" class="kuiCheckBox" ng-model="period.days[4]">
+              <span class="kuiCheckBoxLabel__text">Thursday</span>
+            </label>
+          </div>
+          <div class="kuiFieldGroupSection">
+            <label class="kuiCheckBoxLabel">
+              <input type="checkbox" class="kuiCheckBox" ng-model="period.days[5]">
+              <span class="kuiCheckBoxLabel__text">Friday</span>
+            </label>
+          </div>
+          <div class="kuiFieldGroupSection">
+            <label class="kuiCheckBoxLabel">
+              <input type="checkbox" class="kuiCheckBox" ng-model="period.days[6]">
+              <span class="kuiCheckBoxLabel__text">Saturday</span>
+            </label>
+          </div>
+          <div class="kuiFieldGroupSection">
+            <label class="kuiCheckBoxLabel">
+              <input type="checkbox" class="kuiCheckBox" ng-model="period.days[0]">
+              <span class="kuiCheckBoxLabel__text">Sunday</span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- END STANDBY -->
+
+  </div>
+</div>

@@ -1,0 +1,135 @@
+<div class="kuiControlledTable" ng-controller="cronTableController as tableCtrl">
+
+    <!-- ToolBar -->
+    <div class="kuiToolBar">
+        <div class="kuiToolBarSearch">
+            <div class="kuiToolBarSearchBox">
+                <div class="kuiToolBarSearchBox__icon kuiIcon fa-search"></div>
+                <input class="kuiToolBarSearchBox__input" type="text" placeholder="Search..." ng-model="tableCtrl.cronTable.searchWord" ng-change="tableCtrl.cronTable.index = 0">
+            </div>
+        </div>
+
+        <div class="kuiToolBarSection">
+            <button class="kuiButton kuiButton--primary" ng-click="tableCtrl.newCron()">
+                New
+            </button>
+        </div>
+
+        <div class="kuiToolBarSection">
+            <div class="kuiToolBarText">
+                {{tableCtrl.cronTable.index * tableCtrl.cronTable.numberDisplay + 1}} &ndash;  {{tableCtrl.cronTable.len() > (tableCtrl.cronTable.index + 1) * tableCtrl.cronTable.numberDisplay ? (tableCtrl.cronTable.index + 1) * tableCtrl.cronTable.numberDisplay : tableCtrl.cronTable.len()}} of {{tableCtrl.cronTable.len()}}
+            </div>
+
+            <div class="kuiButtonGroup kuiButtonGroup--united">
+                <button class="kuiButton kuiButton--basic kuiButton--icon" ng-click="tableCtrl.cronTable.previous()">
+                    <span class="kuiButton__icon kuiIcon fa-chevron-left"></span>
+                </button>
+                <button class="kuiButton kuiButton--basic kuiButton--icon" ng-click="tableCtrl.cronTable.next()">
+                    <span class="kuiButton__icon kuiIcon fa-chevron-right"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <table class="kuiTable">
+        <thead>
+            <tr>
+                <th style="width:300px; max-width:300px" class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.cronTable.sortName = 'title'; tableCtrl.cronTable.sortReverse = !tableCtrl.cronTable.sortReverse; tableCtrl.cronTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Title
+                    <span ng-show="tableCtrl.cronTable.sortName == 'title' && tableCtrl.cronTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.cronTable.sortName == 'title' && !tableCtrl.cronTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th style="width:100px; max-width:100px" class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.cronTable.sortName = 'status'; tableCtrl.cronTable.sortReverse = !tableCtrl.cronTable.sortReverse; tableCtrl.cronTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Status
+                    <span ng-show="tableCtrl.cronTable.sortName == 'status' && tableCtrl.cronTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.cronTable.sortName == 'status' && !tableCtrl.cronTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th class="hidden-xs kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.cronTable.sortName = 'periodicity'; tableCtrl.cronTable.sortReverse = !tableCtrl.cronTable.sortReverse; tableCtrl.cronTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Periodicity
+                    <span ng-show="tableCtrl.cronTable.sortName == 'periodicity' && tableCtrl.cronTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.cronTable.sortName == 'periodicity' && !tableCtrl.cronTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th class="hidden-xs kuiTableHeaderCell">
+                  <span class="kuiTableHeaderCell__liner">
+                    Period
+                  </span>
+                </th>
+                <th class="hidden-xs hidden-sm kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.cronTable.sortName = 'createdDate'; tableCtrl.cronTable.sortReverse = !tableCtrl.cronTable.sortReverse; tableCtrl.cronTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Date created
+                    <span ng-show="tableCtrl.cronTable.sortName == 'createdDate' && tableCtrl.cronTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.cronTable.sortName == 'createdDate' && !tableCtrl.cronTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+                <th class="hidden-xs hidden-sm kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="tableCtrl.cronTable.sortName = 'modifiedDate'; tableCtrl.cronTable.sortReverse = !tableCtrl.cronTable.sortReverse; tableCtrl.cronTable.index = 0">
+                  <span class="kuiTableHeaderCell__liner">
+                    Date last modified
+                    <span ng-show="tableCtrl.cronTable.sortName == 'modifiedDate' && tableCtrl.cronTable.sortReverse"  class="kuiTableSortIcon kuiIcon fa-long-arrow-up"></span>
+                    <span ng-show="tableCtrl.cronTable.sortName == 'modifiedDate' && !tableCtrl.cronTable.sortReverse" class="kuiTableSortIcon kuiIcon fa-long-arrow-down"></span>
+                  </span>
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr ng-repeat="item in tableCtrl.cron | orderBy:tableCtrl.cronTable.sortName:tableCtrl.cronTable.sortReverse | filter:{title:tableCtrl.cronTable.searchWord} as results" ng-show="tableCtrl.cronTable.show($index)" class="kuiTableRow" >
+                <td class="kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner">
+                        <a class="kuiLink" title="{{cron.description}}" href="#/cron/edit/{{item.id}}">{{item.title}}</a>
+                    </div>
+                </td>
+                <td class="kuiTableRowCell">
+                    <div class="kuiIcon kuiIcon--success fa-check" ng-show="item.status" title="Enabled"></div>
+                    <div class="kuiIcon kuiIcon--error fa-warning" ng-show="!item.status" title="Disabled"></div>
+
+                    <div class="kuiIcon kuiIcon--info fa-cogs" ng-show="item.script" title="Script"></div>
+                    <div class="kuiIcon kuiIcon--inactive fa-cogs" ng-show="!item.script" title="No script"></div>
+
+                    <div class="kuiIcon kuiIcon--basic fa-envelope" ng-show="item.mail" title="Message mail"></div>
+                    <div class="kuiIcon kuiIcon--inactive fa-envelope" ng-show="!item.mail" title="No message mail"></div>
+
+                    <div class="kuiIcon kuiIcon--basic fa-slack" ng-show="item.slack" title="Message slack"></div>
+                    <div class="kuiIcon kuiIcon--inactive fa-slack" ng-show="!item.slack" title="No message slack"></div>
+
+                    <div class="kuiIcon kuiIcon--basic fa-user" ng-show="item.marvin" title="Message Marvin"></div>
+                    <div class="kuiIcon kuiIcon--inactive fa-user" ng-show="!item.marvin" title="No message Marvin"></div>
+                </td>
+                <td class="hidden-xs kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner">
+                        {{item.periodicity}}
+                    </div>
+                </td>
+                <td class="hidden-xs kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner">
+                        <span ng-bind-html='item.period | period'></span>
+                    </div>
+                </td>
+                <td class="hidden-xs hidden-sm kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner" title="{{item.createdDate}}">
+                        {{item.createdDate | moment}}
+                    </div>
+                </td>
+                <td class="hidden-xs hidden-sm kuiTableRowCell">
+                    <div class="kuiTableRowCell__liner" title="{{item.modifiedDate}}">
+                        {{item.modifiedDate | moment}}
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- NoItems -->
+    <div class="kuiPanel kuiPanel--centered kuiPanel--withToolBar" ng-if="results.length === 0">
+        <div class="kuiTableInfo">
+             No Items matched your search.
+        </div>
+    </div>
+
+</div>

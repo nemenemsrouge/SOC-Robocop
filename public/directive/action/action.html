@@ -1,0 +1,152 @@
+      <div class="kuiVerticalRhythm">
+        <div class="kuiTabs">
+            <button ng-click="actionConfig.tabAction = 'Mail';" class="{{mail.checked ? 'tab-success' : ''}} kuiTab" title="Mail" ng-if="actionConfig.mail.enabled">Mail</button>
+            <button ng-click="actionConfig.tabAction = 'Slack';" class="{{slack.checked ? 'tab-success' : ''}} kuiTab" title="Slack" ng-if="actionConfig.slack.enabled">Slack</button>
+            <button ng-click="actionConfig.tabAction = 'Marvin';" class="{{marvin.checked ? 'tab-success' : ''}} kuiTab" title="Marvin" ng-if="actionConfig.marvin.enabled">Marvin</button>
+        </div>
+
+        <div ng-switch="actionConfig.tabAction">
+          <div ng-switch-when="Mail" ng-show="actionConfig.mail.enabled">
+            <div class="kuiPanel">
+              <div class="kuiPanelHeader">
+                <div class="kuiPanelHeaderSection">
+                  <div class="kuiPanelHeader__title">
+                    <label class="kuiCheckBoxLabel">
+                      <input type="checkbox" class="kuiCheckBox" ng-model="mail.checked">
+                      <span class="kuiCheckBoxLabel__text">Mail</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="kuiPanelHeaderSection">
+                  <div class="kuiIcon kuiIcon--basic fa-binoculars pull-right" ng-click="preview(true, 'mail')"></div>
+                </div>
+              </div>
+
+              <div class="kuiPanelBody">
+                 <dl class="dl-horizontal dl-setting">
+                    <dt title="foo@entreprise.com,bar@entreprise.com" id="mail-addon1" ng-show="actionConfig.mail.fields.indexOf('to') !== -1">@ to</dt>
+                    <dd ng-show="actionConfig.mail.fields.indexOf('to') !== -1"><input type="text" class="form-control" placeholder="{{config.action.mail.to}}" ng-model="mail.to" aria-describedby="mail-addon1" ng-disabled="!mail.checked"></dd>
+
+                    <dt id="mail-addon2" ng-show="actionConfig.mail.fields.indexOf('from') !== -1">@ from</dt>
+                    <dd ng-show="actionConfig.mail.fields.indexOf('from') !== -1"><input type="text" class="form-control" placeholder="{{config.action.mail.from}}" ng-model="mail.from" aria-describedby="mail-addon2" ng-disabled="!mail.checked"></dd>
+
+                    <dt id="mail-addon5" ng-show="actionConfig.mail.fields.indexOf('subject') !== -1">subject</dt>
+                    <dd ng-show="actionConfig.mail.fields.indexOf('subject') !== -1"><input type="text" class="form-control" placeholder="{{config.action.mail.subject}}" ng-model="mail.subject" aria-describedby="mail-addon5" ng-disabled="!mail.checked"></dd>
+
+                    <dt id="mail-addon6" ng-show="actionConfig.mail.fields.indexOf('body') !== -1">body
+                      <br><br>
+                      <button class="kuiMicroButton" ng-click="mail.body = slack.body" ng-disabled="!mail.checked" ng-show="actionConfig.slack.enabled">
+                        <span class="kuiButton__icon kuiIcon fa-slack" title="Copy from slack"></span>
+                      </button>
+                      <button class="kuiMicroButton" ng-click="mail.body = marvin.body" ng-disabled="!mail.checked" ng-show="actionConfig.marvin.enabled">
+                        <span class="kuiButton__icon kuiIcon fa-user" title="Copy from Marvin"></span>
+                      </button>
+                    </dt>
+                    <dd ng-show="actionConfig.mail.fields.indexOf('body') !== -1"><textarea msd-elastic rows="5" class="form-control" placeholder="{{config.action.mail.body}}" ng-model="mail.body" aria-describedby="basic-addon6" ng-disabled="!mail.checked"></textarea></dd>
+                    <dt id="mail-addon6" ng-show="actionConfig.mail.fields.indexOf('priority') !== -1">priority</dt>
+                    <dd ng-show="actionConfig.mail.fields.indexOf('priority') !== -1">
+                      <select id="period" class="form-control", ng-model="mail.priority" ng-disabled="!mail.checked">
+                        <option value="high"> High </option>
+                        <option value="normal"> Normal </option>
+                        <option value="low"> Low </option>
+                      </select>
+                    </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+          <div ng-switch-when="Slack" ng-show="actionConfig.slack.enabled">
+            <div class="kuiPanel">
+              <div class="kuiPanelHeader">
+                <div class="kuiPanelHeaderSection">
+                  <div class="kuiPanelHeader__title">
+                    <label class="kuiCheckBoxLabel">
+                      <input type="checkbox" class="kuiCheckBox" ng-model="slack.checked">
+                      <span class="kuiCheckBoxLabel__text">Slack</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="kuiPanelHeaderSection">
+                  <div class="kuiIcon kuiIcon--basic fa-binoculars pull-right" ng-click="preview(true, 'slack')"></div>
+                </div>
+              </div>
+
+              <div class="kuiPanelBody">
+                <dl class="dl-horizontal dl-setting">
+                  <dt id="basic-addon7" ng-show="actionConfig.slack.fields.indexOf('canal') !== -1">canal</dt>
+                  <dd ng-show="actionConfig.slack.fields.indexOf('canal') !== -1"><input type="text" class="form-control" placeholder="{{config.action.slack.canal}}" ng-model="slack.canal" aria-describedby="basic-addon7" ng-disabled="!slack.checked"></dd>
+
+                  <dt id="basic-addon8" ng-show="actionConfig.slack.fields.indexOf('name') !== -1">bot name</dt>
+                  <dd ng-show="actionConfig.slack.fields.indexOf('name') !== -1"><input type="text" class="form-control" placeholder="{{config.action.slack.name}}" ng-model="slack.name" aria-describedby="basic-addon8" ng-disabled="!slack.checked"></dd>
+
+                  <dt id="basic-addon9" ng-show="actionConfig.slack.fields.indexOf('body') !== -1">body
+                    <br><br>
+                    <button class="kuiMicroButton" ng-click="slack.body = mail.body" ng-disabled="!mail.checked" ng-show="actionConfig.mail.enabled">
+                      <span class="kuiButton__icon kuiIcon fa-envelope" title="Copy from mail"></span>
+                    </button>
+                    <button class="kuiMicroButton" ng-click="slack.body = marvin.body" ng-disabled="!mail.checked" ng-show="actionConfig.marvin.enabled">
+                      <span class="kuiButton__icon kuiIcon fa-user" title="Copy from Marvin"></span>
+                    </button>
+                  </dt>
+                  <dd ng-show="actionConfig.slack.fields.indexOf('body') !== -1"><textarea msd-elastic rows="5" class="form-control" placeholder="{{config.action.slack.body}}" ng-model="slack.body" aria-describedby="basic-addon9" ng-disabled="!slack.checked"></textarea></dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+          <div ng-switch-when="Marvin" ng-show="actionConfig.marvin.enabled">
+            <div class="kuiPanel">
+              <div class="kuiPanelHeader">
+                <div class="kuiPanelHeaderSection">
+                  <div class="kuiPanelHeader__title">
+                    <label class="kuiCheckBoxLabel">
+                      <input type="checkbox" class="kuiCheckBox" ng-model="marvin.checked">
+                      <span class="kuiCheckBoxLabel__text">Marvin</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="kuiPanelHeaderSection">
+                  <div class="kuiIcon kuiIcon--basic fa-binoculars pull-right" ng-click="preview(true, 'marvin')"></div>
+                </div>
+              </div>
+
+              <div class="kuiPanelBody">
+                <dl class="dl-horizontal dl-setting">
+                  <dt id="marvin-addon1" ng-show="actionConfig.marvin.fields.indexOf('type') !== -1">Type</dt>
+                  <dd ng-show="actionConfig.marvin.fields.indexOf('type') !== -1"><input type="text" class="form-control" placeholder="{{config.action.marvin.type}}" ng-model="marvin.typeAlert" aria-describedby="marvin-addon1" ng-disabled="!marvin.checked"></dd>
+
+                  <dt id="marvin-addon9" ng-show="actionConfig.marvin.fields.indexOf('title') !== -1">Title</dt>
+                  <dd ng-show="actionConfig.marvin.fields.indexOf('title') !== -1"><input type="text" class="form-control" placeholder="{{config.action.marvin.title}}" ng-model="marvin.title" aria-describedby="marvin-addon9" ng-disabled="!marvin.checked"></dd>
+
+                  <dt id="marvin-addon7" ng-show="actionConfig.marvin.fields.indexOf('category') !== -1">Category</dt>
+                  <dd ng-show="actionConfig.marvin.fields.indexOf('category') !== -1"><input type="text" class="form-control" placeholder="{{config.action.marvin.category}}" ng-model="marvin.category" aria-describedby="marvin-addon7" ng-disabled="!marvin.checked"></dd>
+
+                  <dt id="marvin-addon8" ng-show="actionConfig.marvin.fields.indexOf('criticity') !== -1">Criticity</dt>
+                  <dd ng-show="actionConfig.marvin.fields.indexOf('criticity') !== -1"><input type="text" class="form-control" placeholder="{{config.action.marvin.criticity}}" ng-model="marvin.criticity" aria-describedby="marvin-addon8" ng-disabled="!marvin.checked"></dd>
+
+                  <dt id="marvin-addon2" ng-show="actionConfig.marvin.fields.indexOf('contact') !== -1">Contact</dt>
+                  <dd ng-show="actionConfig.marvin.fields.indexOf('contact') !== -1"><input type="text" class="form-control" placeholder="{{config.action.marvin.contact}}" ng-model="marvin.contact" aria-describedby="marvin-addon2" ng-disabled="!marvin.checked"></dd>
+
+                  <dt id="marvin-addon3" ng-show="actionConfig.marvin.fields.indexOf('detectionSource') !== -1">Src of detection</dt>
+                  <dd ng-show="actionConfig.marvin.fields.indexOf('detectionSource') !== -1"><input type="text" class="form-control" placeholder="{{config.action.marvin.detectionSource}}" ng-model="marvin.detectionSource" aria-describedby="marvin-addon3" ng-disabled="!marvin.checked"></dd>
+
+                  <dt id="marvin-addon4" ng-show="actionConfig.marvin.fields.indexOf('alertSource') !== -1">Src of alert</dt>
+                  <dd ng-show="actionConfig.marvin.fields.indexOf('alertSource') !== -1"><input type="text" class="form-control" placeholder="{{config.action.marvin.alertSource}}" ng-model="marvin.alertSource" aria-describedby="marvin-addon4" ng-disabled="!marvin.checked"></dd>
+
+                  <dt id="marvin-addon6" ng-show="actionConfig.marvin.fields.indexOf('body') !== -1">Body
+                    <br><br>
+                    <button class="kuiMicroButton" ng-click="marvin.body = mail.body" ng-disabled="!marvin.checked" ng-show="actionConfig.mail.enabled">
+                      <span class="kuiButton__icon kuiIcon fa-envelope" title="Copy from mail"></span>
+                    </button>
+                    <button class="kuiMicroButton" ng-click="marvin.body = slack.body" ng-disabled="!marvin.checked" ng-show="actionConfig.slack.enabled">
+                      <span class="kuiButton__icon kuiIcon fa-slack" title="Copy from slack"></span>
+                    </button>
+                  </dt>
+                  <dd ng-show="actionConfig.marvin.fields.indexOf('body') !== -1"><textarea msd-elastic rows="5" class="form-control" placeholder="{{config.action.marvin.body}}" ng-model="marvin.body" aria-describedby="marvin-addon6" ng-disabled="!marvin.checked"></textarea></dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>

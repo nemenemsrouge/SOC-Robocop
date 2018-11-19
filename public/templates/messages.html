@@ -1,0 +1,34 @@
+<div ng-switch on="message.type">
+    <div ng-switch-when="slack">
+        <div class="kuiPanel kuiVerticalRhythm" style="border-color: #4D394B;">
+            <div class="kuiPanelBody">
+                <p><strong>{{slack.name || "Slack API Tester"}}</strong> <span class="bot-slack">APP</span>
+                <span class="wordWrap" style="margin-left:10px" ng-repeat="line in message.body.split('\n') track by $index">{{line}}<br></span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div ng-switch-when="mail">
+        <div class="kuiPanel kuiVerticalRhythm" style="border-color: #0000FF;">
+            <div class="kuiPanelBody">
+                <div class="kuiVerticalRhythm">{{message.from || mail.from}} &nbsp; | &nbsp; {{message.to || mail.to}}</div>
+                <div class="kuiVerticalRhythm"><strong >{{message.subject}}</strong></div>
+                <hr style="margin-top:0px">
+                <span class="wordWrap kuiVerticalRhythm" ng-repeat="line in message.body.split('\n') track by $index">{{line}}<br></span>
+            </div>
+        </div>
+    </div>
+     <div ng-switch-when="marvin">
+        <div class="kuiPanel kuiVerticalRhythm" style="border-color: #005571;">
+            <div class="kuiPanelBody">
+              <span class="wordWrap" style="margin-left:10px" ng-repeat="line in message.body.split('\n') track by $index">{{line}}<br></span>
+            </div>
+        </div>
+    </div>
+    <div ng-switch-default>
+        <pre>{{message | json}}</pre>
+    </div>
+</div>
+
+
+

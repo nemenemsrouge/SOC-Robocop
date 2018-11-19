@@ -1,0 +1,17 @@
+<div ng-include="'../plugins/robocop/templates/menu.html'"></div>
+
+<div class="container-fluid container-bigger">
+  <div class="row kuiVerticalRhythm"> <!-- List of alerts -->
+    <div class="col-sm-12">
+
+      <div class="kuiBar">
+        <div class="kuiTitle" style="display:inline-block;"><h1>Alert</h1></div>
+        <div style="display:inline-block; float:right"><h1><small>{{totalAlertOn}} / {{totalAlert}} alerts enabled</small></h1></div>
+      </div>
+
+      <div ng-include="'../plugins/robocop/templates/alert/alertTable.html'"></div>
+
+    </div>
+  </div>
+</div>
+

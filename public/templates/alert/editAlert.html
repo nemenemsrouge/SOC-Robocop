@@ -1,0 +1,475 @@
+<div ng-include="'../plugins/robocop/templates/menu.html'"></div>
+<br>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+
+      <!-- BUTTON BAR -->
+      <div class="kuiButtonGroup kuiButtonGroup--united kuiVerticalRhythm" role="group">
+        <button class="kuiButton kuiButton--primary" ng-click="validate()">
+          <span class="kuiButton__inner">
+            <span> {{isNew ? "Create" : "Save"}} </span>
+          </span>
+        </button>
+        <button class="kuiButton kuiButton--primary" ng-if="!isNew" ng-click="delete()">
+          <span class="kuiButton__inner">
+            <span> Delete </span>
+          </span>
+        </button>
+        <button class="kuiButton kuiButton--primary" ng-if="!isNew" ng-click="duplicate()">
+          <span class="kuiButton__inner">
+            <span> Duplicate </span>
+          </span>
+        </button>
+        <button class="kuiButton kuiButton--primary" ng-click="checkButton()">
+          <span class="kuiButton__inner">
+            <span> Check request </span>
+          </span>
+        </button>
+        <button class="kuiButton kuiButton--primary" ng-click="debug()">
+          <span class="kuiButton__inner">
+            <span> Debug </span>
+          </span>
+        </button>
+        <button class="kuiButton kuiButton--primary" ng-if="!isNew" ng-click="openLog()">
+          <span class="kuiButton__inner">
+            <span> Log </span>
+          </span>
+        </button>
+      </div>
+      <!-- END BUTTON BAR -->
+
+      <!-- GENERAL -->
+      <div class="row kuiVerticalRhythm"> <!-- Title bar TODO : remove boostrap class -->
+        <div class="col-md-7">
+          <input id="title" class="form-control" style="width:100%" ng-model="alert.title" placeholder="Title"></input>
+        </div>
+
+        <div class="col-md-1" style="padding-left: 10px;">
+         <input type="text" class="form-control" disabled value="{{alert.number}}">
+        </div>
+
+        <div class="col-md-2">
+          <select id="category" class="form-control" style="width:100%" ng-model="alert.category" title="Category">
+            <option ng-repeat="item in category" value="{{item}}"> {{item}} </option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <select id="level" class="form-control" style="width:100%" ng-model="alert.level" title="Severity">
+            <option ng-repeat="item in level" value="{{item}}"> {{item}} </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="kuiVerticalRhythm"> <!-- INPUT : Description -->
+        <label class="kuiLabel" for="description"> Description: </label>
+        <textarea id="description" class="kuiTextArea fullWidth" msd-elastic rows="3" ng-model="alert.description"></textarea>
+      </div>
+
+      <div class="kuiVerticalRhythm"> <!-- INPUT : Data -->
+        <label class="kuiLabel" for="data"> Data: </label>
+        <textarea id="data" class="kuiTextArea fullWidth" msd-elastic rows="3" ng-model="alert.data"></textarea>
+      </div>
+
+      <div class="kuiVerticalRhythm" ng-form name="irpForm"> <!-- INPUT : IRP -->
+        <label class="kuiLabel" for="irp"> Incident Response Plan (url):</label> <a ng-show="irpForm.irpInput.$valid && alert.irp" class="kuiIcon kuiIcon--basic fa-external-link-square" target="_blank" href="{{alert.irp}}"></a>
+        <input id="irp" name="irpInput" type="url" class="kuiTextInput fullWidth" msd-elastic rows="1" ng-model="alert.irp"></input>
+      </div>
+
+      <!-- END GENERAL -->
+
+      <!-- SETTING -->
+      <div class="kuiPanel kuiVerticalRhythm">
+        <div class="kuiPanelHeader">
+          <div class="kuiPanelHeaderSection">
+            <div class="kuiPanelHeader__title">
+              Settings
+            </div>
+          </div>
+        </div>
+
+        <div class="kuiPanelBody">
+          <div class="row">
+            <div class="col-sm-6">
+              <label class="kuiCheckBoxLabel" title="">
+                <input type="checkbox" class="kuiCheckBox" ng-model="alert.enabled">
+                <span class="kuiCheckBoxLabel__text">Enabled</span>
+              </label>
+
+              <label class="kuiCheckBoxLabel" title="Use to send a message for each aggregation return by the alert">
+                <input type="checkbox" class="kuiCheckBox" ng-model="alert.multiMessage">
+                <span class="kuiCheckBoxLabel__text">Multi message</span>
+              </label>
+            </div>
+            <div class="col-sm-6">
+              <label class="kuiCheckBoxLabel" title="Restricted alert to useful logstash indices">
+                <input type="checkbox" class="kuiCheckBox" ng-model="alert.optiLogstash">
+                <span class="kuiCheckBoxLabel__text">Logstash optimizer</span>
+              </label>
+            </div>
+
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="kuiFieldGroup kuiVerticalRhythm">
+                <div class="kuiFieldGroupSection">
+                  <label class="kuiCheckBoxLabel" title="Working Hours">
+                    <input type="radio" class="kuiCheckBox" ng-model="alert.period.type" value="wh">
+                    <span class="kuiCheckBoxLabel__text">wh</span>
+                  </label>
+                </div>
+                <div class="kuiFieldGroupSection">
+                  <label class="kuiCheckBoxLabel" title="Non-Working Hours">
+                    <input type="radio" class="kuiCheckBox" ng-model="alert.period.type" value="nwh">
+                    <span class="kuiCheckBoxLabel__text">nwh</span>
+                  </label>
+                </div>
+                <div class="kuiFieldGroupSection">
+                  <label class="kuiCheckBoxLabel">
+                    <input type="radio" class="kuiCheckBox" ng-model="alert.period.type" value="custom">
+                    <span class="kuiCheckBoxLabel__text">Custom</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="kuiPanel kuiVerticalRhythm" ng-show="alert.period.type == 'custom'">
+                <div class="kuiPanelBody">
+                  <div class="kuiFieldGroup kuiVerticalRhythm">
+                    <div class="kuiFieldGroupSection">
+                      <label class="kuiCheckBoxLabel">
+                        <input type="checkbox" class="kuiCheckBox" ng-model="alert.period.enabled">
+                        <span class="kuiCheckBoxLabel__text"> Active period</span>
+                      </label>
+                    </div>
+                    <div class="kuiFieldGroupSection">
+                       : from
+                       <input type="time" ng-model="alert.period.start" class="kuiTextInput" placeholder="hh:mm"> to
+                       <input type="time" ng-model="alert.period.end" class="kuiTextInput" placeholder="hh:mm">
+                    </div>
+                  </div>
+
+                  <div class="kuiFieldGroup kuiVerticalRhythm">
+                    <div class="kuiFieldGroupSection">
+                      <label class="kuiCheckBoxLabel">
+                        <input type="checkbox" class="kuiCheckBox" ng-model="alert.period.days[1]">
+                        <span class="kuiCheckBoxLabel__text">Monday</span>
+                      </label>
+                    </div>
+                    <div class="kuiFieldGroupSection">
+                      <label class="kuiCheckBoxLabel">
+                        <input type="checkbox" class="kuiCheckBox" ng-model="alert.period.days[2]">
+                        <span class="kuiCheckBoxLabel__text">Tuesday</span>
+                      </label>
+                    </div>
+                    <div class="kuiFieldGroupSection">
+                      <label class="kuiCheckBoxLabel">
+                        <input type="checkbox" class="kuiCheckBox" ng-model="alert.period.days[3]">
+                        <span class="kuiCheckBoxLabel__text">Wednesday</span>
+                      </label>
+                    </div>
+                    <div class="kuiFieldGroupSection">
+                      <label class="kuiCheckBoxLabel">
+                        <input type="checkbox" class="kuiCheckBox" ng-model="alert.period.days[4]">
+                        <span class="kuiCheckBoxLabel__text">Thursday</span>
+                      </label>
+                    </div>
+                    <div class="kuiFieldGroupSection">
+                      <label class="kuiCheckBoxLabel">
+                        <input type="checkbox" class="kuiCheckBox" ng-model="alert.period.days[5]">
+                        <span class="kuiCheckBoxLabel__text">Friday</span>
+                      </label>
+                    </div>
+                    <div class="kuiFieldGroupSection">
+                      <label class="kuiCheckBoxLabel">
+                        <input type="checkbox" class="kuiCheckBox" ng-model="alert.period.days[6]">
+                        <span class="kuiCheckBoxLabel__text">Saturday</span>
+                      </label>
+                    </div>
+                    <div class="kuiFieldGroupSection">
+                      <label class="kuiCheckBoxLabel">
+                        <input type="checkbox" class="kuiCheckBox" ng-model="alert.period.days[0]">
+                        <span class="kuiCheckBoxLabel__text">Sunday</span>
+                      </label>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="kuiPanel kuiVerticalRhythm" ng-show="alert.period.type == 'nwh'">
+                <div class="kuiPanelBody">
+                  <p>Monday, Tuesday, Wednesday, Thurday, Friday, Saturday, Sunday</p>
+                  <p>00:00 - 23:59</p>
+                </div>
+              </div>
+              <div class="kuiPanel kuiVerticalRhythm" ng-show="alert.period.type == 'wh'">
+                <div class="kuiPanelBody">
+                  <p>
+                    {{workingPeriod.days.join(", ")}}<br>
+                    {{workingPeriod.hours}}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END SETTING -->
+
+      <!-- WATCHER -->
+      <div class="kuiPanel kuiVerticalRhythm">
+        <div class="kuiPanelHeader">
+          <div class="kuiPanelHeaderSection">
+            <div class="kuiPanelHeader__title">
+              Watcher
+            </div>
+          </div>
+
+          <div class="kuiPanelHeaderSection">
+            <div class="kuiIcon kuiIcon--basic fa-binoculars pull-right" ng-click="previewReq(true)"></div>
+          </div>
+        </div>
+
+        <div class="kuiPanelBody">
+          <div class="form-group kuiVerticalRhythm"> <!-- INPUT : search index -->
+            <label class="kuiLabel" for="watcherIndices"> Search index: </label>
+            <div class="row">
+              <div class="col-sm-9">
+                <input id="watcherIndices" type="text" class="kuiTextInput fullWidth" placeholder="{{config.watcher.indices}}" ng-model="alert.watcher.indices" >
+              </div>
+              <div class="col-sm-3">
+                <select class="kuiSelect fullWidth" ng-model="alert.watcher.indices">
+                  <option ng-repeat="indice in indices">{{indice}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="kuiVerticalRhythm"> <!-- INPUT : Periodicity -->
+            <label class="kuiLabel" for="period"> Periodicity: </label>
+            <select id="period" class="kuiSelect fullWidth" ng-model="alert.watcher.periodicity">
+              <option value="1 minutes"> 1 minute </option>
+              <option value="10 minutes"> 10 minutes </option>l
+              <option value="30 minnutes"> 30 minutes </option>
+              <option value="1 hours"> 1 hour </option>
+              <option value="2 hours"> 2 hours </option>
+              <option value="1 days"> 1 day </option>
+              <option value="7 days"> 1 week </option>
+              <option value="1 months"> 1 month </option>
+            </select>
+          </div>
+
+          <div class="kuiLabel kuiVerticalRhythm"> <!-- INPUT : Request -->
+            <label for="json-ace"> Request: </label>
+            <div class="kuiPanel">
+              <div class="kuiPanelBody" style="padding: 0px;" >
+                <div
+                  id="json-ace"
+                  ng-model="alert.watcher.request"
+                  ui-ace="{
+                    useWrapMode: true,
+                    onLoad: aceLoaded,
+                    advanced: {
+                      highlightActiveLine: true
+                    },
+                    rendererOptions: {
+                      showPrintMargin: false,
+                      maxLines: 4294967296
+                    },
+                    mode: 'json',
+                    theme: 'xcode'
+                    }">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END WATCHER -->
+
+      <!-- ACTION -->
+      <robocop-action></robocop-action>
+      <!-- END ACTION -->
+
+      <!-- SCRIPT -->
+      <div ng-if="config.script.enabled" class="panel panel-default kuiVerticalRhythm" ng-controller="robocopHelpScriptController as modalCtrl">
+        <div class="kuiPanel">
+          <div class="kuiPanelHeader">
+            <div class="kuiPanelHeaderSection">
+              <div class="kuiPanelHeader__title">
+                <label class="kuiCheckBoxLabel">
+                  <input type="checkbox" class="kuiCheckBox" ng-model="alert.scriptChecked">
+                  <span class="kuiCheckBoxLabel__text">Script</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="kuiPanelHeaderSection">
+              <div class="kuiIcon kuiIcon--info fa-info pull-right" ng-click="modalCtrl.showScriptHelp()"></div>
+            </div>
+          </div>
+
+          <div class="kuiPanelBody">
+            <div class="row">
+              <div class="col-sm-6">
+                <p ng-show="alert.hasScript">A script was found : {{alert.script.name}}</p>
+                <input type="file" id="file"/>
+              </div>
+              <div class="col-sm-6">
+                <label> Arguments </label>
+                <div class="row">
+                  <div class="col-sm-4">
+                     <label class="kuiCheckBoxLabel">
+                      <input type="checkbox" class="kuiCheckBox" ng-model="scriptArgs.idAlert">
+                      <span class="kuiCheckBoxLabel__text">--idAlert</span>
+                    </label>
+                    <label class="kuiCheckBoxLabel">
+                      <input type="checkbox" class="kuiCheckBox" ng-model="scriptArgs.idHistory">
+                      <span class="kuiCheckBoxLabel__text">--idHistory</span>
+                    </label>
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="kuiCheckBoxLabel">
+                      <input type="checkbox" class="kuiCheckBox" ng-model="scriptArgs.alert">
+                      <span class="kuiCheckBoxLabel__text">--alert</span>
+                    </label>
+                    <label class="kuiCheckBoxLabel">
+                      <input type="checkbox" class="kuiCheckBox" ng-model="scriptArgs.date">
+                      <span class="kuiCheckBoxLabel__text">--date</span>
+                    </label>
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="kuiCheckBoxLabel">
+                      <input type="checkbox" class="kuiCheckBox" ng-model="scriptArgs.result">
+                      <span class="kuiCheckBoxLabel__text">--result</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div ng-include="'../plugins/robocop/templates/scriptHelp.html'"></div>
+      </div>
+      <!-- END SCRIPT -->
+
+      <!-- NOTIFICATION -->
+      <div class="alert alert-{{alertCreation.type}} {{hidden}}" ng-show="alertCreation.visible">
+          <button type="button" ng-click="alertCreation.visible = false;" class="close" aria-label="close">&times;</button>
+          <strong>{{alertCreation.text}}</strong>
+      </div>
+      <!-- END NOTIFICATION -->
+
+      <!-- BUTTON BAR -->
+      <div class="kuiButtonGroup kuiButtonGroup--united kuiVerticalRhythm" role="group">
+        <button class="kuiButton kuiButton--primary" ng-click="validate()">
+          <span class="kuiButton__inner">
+            <span> {{isNew ? "Create" : "Save"}} </span>
+          </span>
+        </button>
+        <button class="kuiButton kuiButton--primary" ng-if="!isNew" ng-click="delete()">
+          <span class="kuiButton__inner">
+            <span> Delete </span>
+          </span>
+        </button>
+        <button class="kuiButton kuiButton--primary" ng-if="!isNew" ng-click="duplicate()">
+          <span class="kuiButton__inner">
+            <span> Duplicate </span>
+          </span>
+        </button>
+        <button class="kuiButton kuiButton--primary" ng-click="checkButton()">
+          <span class="kuiButton__inner">
+            <span> Check request </span>
+          </span>
+        </button>
+        <button class="kuiButton kuiButton--primary" ng-click="debug()">
+          <span class="kuiButton__inner">
+            <span> Debug </span>
+          </span>
+        </button>
+        <button class="kuiButton kuiButton--primary" ng-if="!isNew" ng-click="openLog()">
+          <span class="kuiButton__inner">
+            <span> Log </span>
+          </span>
+        </button>
+      </div>
+      <!-- END BUTTON BAR -->
+
+      <!-- PREVIEW REQUEST-->
+      <hr>
+      <h1 class="kuiTitle kuiVerticalRhythm" id="anchorPrevReq">
+        Preview Request
+      </h1>
+      <div class="kuiVerticalRhythm" ng-if="!previewRequest">
+        <pre
+          id="json-ace"
+          ng-model="previewRequestJson"
+          readonly
+          ui-ace="{
+            useWrapMode: true,
+            onLoad: aceLoaded,
+            advanced: {
+              highlightActiveLine: true
+            },
+            rendererOptions: {
+              showPrintMargin: false,
+              maxLines: 4294967296
+            },
+            mode: 'json',
+            theme: 'xcode'
+            }"
+          class="kuiVerticalRhythm">
+        </pre>
+      </div>
+      <div class="kuiVerticalRhythm" ng-if="previewRequest">
+        <div class="kuiInfoPanel kuiInfoPanel--warning">
+          <div class="kuiInfoPanelHeader">
+            <span class="kuiInfoPanelHeader__icon kuiIcon kuiIcon--warning fa-bolt"></span>
+            <span class="kuiInfoPanelHeader__title">
+               {{previewRequest}}
+            </span>
+          </div>
+        </div>
+      </div>
+       <!-- PREVIEW REQUEST-->
+    </div>
+  </div>
+
+
+  <!-- MODAL PREVIEW -->
+  <div class="kuiModalOverlay" ng-if="isPreview" style="bottom:auto; padding-bottom: 100%;">
+    <div class="kuiModal" style="width: 900px">
+      <div class="kuiModalHeader">
+        <div class="kuiModalHeader__title">
+          Preview
+        </div>
+        <div class="kuiModalHeaderCloseButton kuiIcon fa-times" ng-click="preview(false)"></div>
+      </div>
+
+      <div class="kuiModalBody">
+        <div class="kuiModalBodyText kuiVerticalRhythm" ng-repeat="message in previewMsg" ng-if="!previewMsg.error">
+          <div ng-include="'../plugins/robocop/templates/messages.html'"></div>
+        </div>
+        <div class="kuiModalBodyText kuiVerticalRhythm"ng-if="previewMsg.error">
+          <div class="kuiInfoPanel kuiInfoPanel--warning">
+              <div class="kuiInfoPanelHeader">
+                <span class="kuiInfoPanelHeader__icon kuiIcon kuiIcon--warning fa-bolt"></span>
+                <span class="kuiInfoPanelHeader__title">
+                  {{previewMsg.error}}
+                </span>
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kuiModalFooter">
+        <button class="kuiButton kuiButton--hollow" ng-click="preview(false)">
+          Ok
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- END MODAL PREVIEW -->
+
+</div>

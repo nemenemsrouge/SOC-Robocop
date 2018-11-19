@@ -1,0 +1,335 @@
+<div ng-include="'../plugins/robocop/templates/menu.html'"></div>
+
+<div class="container-fluid container-bigger">
+  <div class="row kuiVerticalRhythm">
+    <div class="col-sm-12" title="{{hist.alertDate}}">
+      <div class="page-header well">
+        <h1 class="kuiTitle">{{alert.title}} <p class="kuiSubText">{{hist.alertDate.toLocaleDateString()}}  {{hist.alertDate.toLocaleTimeString()}}</small></h1>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERT -->
+  <div class="row kuiVerticalRhythm">
+    <!-- ALERT GENERAL -->
+    <div class="col-md-6 kuiVerticalRhythm">
+
+      <!-- WATCHER -->
+      <div class="kuiVerticalRhythm">
+        <div class="kuiPanel kuiPanel--withHeader">
+          <div class="kuiPanelHeader">
+            <div class="KuiPanelHeader__title">
+              Information
+            </div>
+          </div>
+          <div class ="kuiPanelBody">
+            <p class="kuiText">The alert <strong>{{alert.title}}</strong> was triggered the <strong>{{hist.alertDate.toLocaleDateString()}}</strong> at
+              <strong>{{hist.alertDate.toLocaleTimeString()}}</strong>. It monitored the index <strong><u>{{alert.watcher.indices}}</u></strong></p>
+            <p class="kuiText">The following search returned a result.</p>
+            <pre
+              id="json-ace-alert"
+              ng-model="alert.watcher.request"
+              readonly
+              ui-ace="{
+                useWrapMode: true,
+                onLoad: aceLoaded,
+                advanced: {
+                  highlightActiveLine: false
+                },
+                rendererOptions: {
+                  showPrintMargin: false,
+                  maxLines: 4294967296
+                },
+                mode: 'json',
+                theme: 'xcode'
+                }">
+            </pre>
+            <span class="wordWrap" ng-repeat="line in alert.description.split('\n') track by $index">{{line}}<br></span>
+          </div>
+        </div>
+      </div>
+      <!-- END WATCHER -->
+
+      <!-- ACTIONS -->
+      <div class="kuiVerticalRhythm" ng-repeat="action in alert.action">
+        <div class="kuiPanel kuiPanel--withHeader" >
+          <div class="kuiPanelHeader">
+            <div class="KuiPanelHeader__title">
+              {{action.type}}
+            </div>
+          </div>
+          <div class ="kuiPanelBody">
+
+            <div ng-switch on="action.type">
+              <div ng-switch-when="slack">
+                <dl class="dl-horizontal">
+                  <dt>canal</dt>
+                  <dd>{{action.canal}}</dd>
+                  <dt>bot name</dt>
+                  <dd>{{action.name}}</dd>
+                  <dt>message</dt>
+                  <dd><textarea style="background-color:white; border-color:white; cursor: default; overflow-x: scroll; overflow-y:hidden; white-space: pre;" rows="{{action.body.split('\n').length + 1}}" class="form-control" ng-model="action.body" disabled></textarea></dd>
+                </dl>
+              </div>
+              <div ng-switch-when="mail">
+                <dl class="dl-horizontal">
+                  <dt>from</dt>
+                  <dd>{{action.from}}</dd>
+                  <dt>to</dt>
+                  <dd>{{action.to}}</dd>
+                  <dt>subject</dt>
+                  <dd>{{action.subject}}</dd>
+                  <dt>body</dt>
+                  <dd><textarea style="background-color:white; border-color:white; cursor: default; overflow-x: scroll; overflow-y:hidden; white-space: pre;" rows="{{action.body.split('\n').length + 1}}" class="form-control" ng-model="action.body" disabled></textarea></dd>
+                </dl>
+              </div>
+              <div ng-switch-when="marvin">
+                <dl class="dl-horizontal">
+                  <dt>Type</dt>
+                  <dd>{{action.typeAlert}}</dd>
+                  <dt>Contact</dt>
+                  <dd>{{action.contact}}</dd>
+                  <dt>Src of detection</dt>
+                  <dd>{{action.detectionSource}}</dd>
+                  <dt>Src of alert</dt>
+                  <dd>{{action.alertSource}}</dd>
+                  <dt>message</dt>
+                  <dd><textarea style="background-color:white; border-color:white; cursor: default; overflow-x: scroll; overflow-y:hidden; white-space: pre;" rows="{{action.body.split('\n').length + 1}}" class="form-control" ng-model="action.body" disabled></textarea></dd>
+                </dl>
+              </div>
+              <div ng-switch-default>
+                <pre>{{action | json}}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END ACTIONS -->
+
+    </div>
+    <!-- END ALERT GENERAL -->
+
+    <!-- MESSAGE SEND -->
+    <div class="col-md-6 kuiVerticalRhythm">
+      <div class="kuiPanel kuiPanel--withHeader" >
+        <div class="kuiPanelHeader">
+          <div class="KuiPanelHeader__title">
+            Message Send
+          </div>
+        </div>
+        <div class ="kuiPanelBody">
+          <div class="kuiVerticalRhythm" ng-repeat="message in hist.messageSend">
+            <div ng-include="'../plugins/robocop/templates/messages.html'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END MESSAGE SEND -->
+
+  </div>
+  <!-- END ALERT -->
+
+  <!-- RESULT -->
+  <div class="row kuiVerticalRhythm">
+    <div class="col-sm-12">
+      <h1 class="kuiTitle">Result</h1>
+
+        <div class="kuiHeaderBar kuiVerticalRhythm" ng-show="data.length != 0">
+          <div class="kuiHeaderBarSection">
+            <h2 class="kuiSubTitle">
+              Hits
+            </h2>
+          </div>
+        </div>
+
+        <!-- TABLE RESULT -->
+        <div class="kuiControlledTable kuiVerticalRhythm" ng-show="data.length != 0">
+
+          <!-- ToolBar -->
+          <div class="kuiToolBar">
+            <div class="kuiToolBarSearch">
+              <div class="kuiToolBarSearchBox">
+                <div class="kuiToolBarSearchBox__icon kuiIcon fa-search"></div>
+                <input class="kuiToolBarSearchBox__input" type="text" placeholder="Search..." ng-model="resultTable.searchWord" ng-change="resultTable.index = 0">
+              </div>
+            </div>
+            <div class="kuiToolBarSection">
+              <button class="kuiButton kuiButton--basic kuiButton--icon" ng-init="colNameShow=true" ng-click="colNameShow = !colNameShow">
+                <span class="kuiButton__icon kuiIcon fa-bars"></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Div select col -->
+          <div class="kuiPanel" ng-show="colNameShow && colName.length != 0">
+            <div class="kuiPanelBody">
+              <div class="row">
+                <div class="col-sm-2">
+                  <ul>
+                    <li ng-repeat="col in colName.slice(0, colName.length/6)"><span ng-click="hideCol[col] = !hideCol[col];" class="text-{{hideCol[col] ? 'select' : 'unselect'}}">{{col}}</span></li>
+                  </ul>
+                </div>
+                <div class="col-sm-2">
+                  <ul>
+                    <li ng-repeat="col in colName.slice(colName.length/6, colName.length/6 * 2)"><span ng-click="hideCol[col] = !hideCol[col];" class="text-{{hideCol[col] ? 'select' : 'unselect'}}">{{col}}</span></li>
+                  </ul>
+                </div>
+                <div class="col-sm-2">
+                  <ul>
+                    <li ng-repeat="col in colName.slice(colName.length/6 * 2, colName.length/6 * 3)"><span ng-click="hideCol[col] = !hideCol[col];" class="text-{{hideCol[col] ? 'select' : 'unselect'}}">{{col}}</span></li>
+                  </ul>
+                </div>
+                <div class="col-sm-2">
+                  <ul>
+                    <li ng-repeat="col in colName.slice(colName.length/6 * 3, colName.length/6 * 4)"><span ng-click="hideCol[col] = !hideCol[col];" class="text-{{hideCol[col] ? 'select' : 'unselect'}}">{{col}}</span></li>
+                  </ul>
+                </div>
+                <div class="col-sm-2">
+                  <ul>
+                    <li ng-repeat="col in colName.slice(colName.length/6 * 4, colName.length/6 * 5)"><span ng-click="hideCol[col] = !hideCol[col];" class="text-{{hideCol[col] ? 'select' : 'unselect'}}">{{col}}</span></li>
+                  </ul>
+                </div>
+                <div class="col-sm-2">
+                  <ul>
+                    <li ng-repeat="col in colName.slice(colName.length/6 * 5, colName.length)"><span ng-click="hideCol[col] = !hideCol[col];" class="text-{{hideCol[col] ? 'select' : 'unselect'}}">{{col}}</span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+            <!-- Table -->
+            <table class="kuiTable" ng-hide="colName.length === 0">
+              <thead>
+                <tr>
+                  <th ng-repeat="col in colName" class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="resultTable.sortName = colName[$index]; resultTable.sortReverse = !resultTable.sortReverse; resultTable.index = 0;" ng-show="hideCol[col]">
+                    <span class="kuiTableHeaderCell__liner">
+                      {{col}}
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr ng-repeat="res in data | orderBy:resultTable.sortName:resultTable.sortReverse | filter:resultTable.searchWord as results" ng-show="resultTable.show($index)" class="kuiTableRow" >
+
+                  <td class="kuiTableRowCell" ng-repeat="col in colName" ng-show="hideCol[col]">
+                    <div class="kuiTableRowCell__liner">
+                      <span class="kuiTableHeaderCell__liner">
+                        {{res[col]}}
+                      </span>
+                    </div>
+                  </td>
+
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- NoItems -->
+            <div class="kuiPanel kuiPanel--centered kuiPanel--withToolBar" ng-if="results.length === 0">
+              <div class="kuiTableInfo">
+                No Items matched your search.
+              </div>
+            </div>
+
+        </div>
+        <!-- END TABLE RESULT -->
+
+        <div class="kuiHeaderBar kuiVerticalRhythm" ng-show="aggs.length != 0">
+          <div class="kuiHeaderBarSection">
+            <h2 class="kuiSubTitle">
+              Aggregations
+            </h2>
+          </div>
+        </div>
+
+        <!-- TABLE AGGS -->
+        <div class="kuiControlledTable kuiVerticalRhythm" ng-show="aggs.length != 0">
+
+          <!-- ToolBar -->
+          <div class="kuiToolBar">
+            <div class="kuiToolBarSearch">
+              <div class="kuiToolBarSearchBox">
+                <div class="kuiToolBarSearchBox__icon kuiIcon fa-search"></div>
+                <input class="kuiToolBarSearchBox__input" type="text" placeholder="Search..." ng-model="resultTableAggs.searchWord" ng-change="resultTableAggs.index = 0">
+              </div>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <table class="kuiTable">
+            <thead>
+              <tr>
+                <th class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="resultTableAggs.sortName = colName[$index]; resultTableAggs.sortReverse = !resultTableAggs.sortReverse; resultTableAggs.index = 0;">
+                  <span class="kuiTableHeaderCell__liner">
+                    key
+                  </span>
+                </th>
+                <th class="kuiTableHeaderCell kuiTableHeaderCell--sortable" ng-click="resultTableAggs.sortName = colName[$index]; resultTableAggs.sortReverse = !resultTableAggs.sortReverse; resultTableAggs.index = 0;">
+                  <span class="kuiTableHeaderCell__liner">
+                    doc_count
+                  </span>
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr ng-repeat="res in aggs | orderBy:resultTableAggs.sortName:resultTableAggs.sortReverse | filter:resultTableAggs.searchWord as resultsAggs" ng-show="resultTableAggs.show($index)" class="kuiTableRow" >
+                <td class="kuiTableRowCell">
+                  <div class="kuiTableRowCell__liner">
+                    {{res.key}}
+                  </div>
+                </td>
+                <td class="kuiTableRowCell">
+                  <div class="kuiTableRowCell__liner">
+                    {{res.doc_count}}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- NoItems -->
+          <div class="kuiPanel kuiPanel--centered kuiPanel--withToolBar" ng-if="resultsAggs.length === 0">
+            <div class="kuiTableInfo">
+              No Items matched your search.
+            </div>
+          </div>
+
+        </div>
+        <!-- END TABLE AGGS -->
+
+        <div class="kuiHeaderBar kuiVerticalRhythm">
+          <div class="kuiHeaderBarSection">
+            <h2 class="kuiSubTitle">
+              Json
+            </h2>
+          </div>
+        </div>
+
+        <!-- JSON RESULT -->
+        <pre
+          id="json-ace"
+          ng-model="prettyResult"
+          readonly
+          ui-ace="{
+            useWrapMode: true,
+            onLoad: aceLoaded,
+            advanced: {
+              highlightActiveLine: true
+            },
+            rendererOptions: {
+              showPrintMargin: false,
+              maxLines: 4294967296
+            },
+            mode: 'json',
+            theme: 'xcode'
+            }"
+          class="kuiVerticalRhythm">
+        </pre>
+        <!-- END JSON RESULT -->
+      </div>
+  </div>
+  <!-- END RESULT -->
+
+</div>

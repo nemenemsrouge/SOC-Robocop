@@ -1,0 +1,90 @@
+<kbn-top-nav name="robocop" config="topNavMenu">
+  <div data-transclude-slots>
+    <div class="kuiLocalBreadcrumbs" data-transclude-slot="topLeftCorner">
+
+      <div class="kuiLocalBreadcrumb">
+        <a class="kuiLocalBreadcrumb__link" kbn-href="#/">Robocop</a>
+      </div>
+
+      <div class="kuiLocalBreadcrumb">
+        <a class="kuiLocalBreadcrumb__link" kbn-href="#/management">Management</a>
+      </div>
+
+      <div ng_show="!idObject" class="kuiLocalBreadcrumb">
+        <span class="kuiLocalBreadcrumb__emphasis">Log</span>
+      </div>
+
+      <div ng_show="idObject" class="kuiLocalBreadcrumb">
+        <a class="kuiLocalBreadcrumb__link" kbn-href="#/management/log">Log</a>
+      </div>
+
+      <div ng_show="idObject" class="kuiLocalBreadcrumb">
+        <span class="kuiLocalBreadcrumb__emphasis">{{idObject}}</span>
+      </div>
+
+    </div>
+
+
+    <div class="kuiLocalSearch" style="width: 100%; height:30px" data-transclude-slot="bottomRow">
+      <input
+        ng-model="$parent.searchInput"
+        class="kuiLocalSearchInput"
+        type="text"
+        placeholder="Search..."
+      >
+      <div class="kuiButtonGroup kuiButtonGroup--united" style="margin-left:10px;margin-right:10px">
+        <button ng-click="$parent.lvlInfo = !$parent.lvlInfo" class="kuiButton kuiButton--{{$parent.lvlInfo ? 'primary' : 'basic'}}">
+          Info
+        </button>
+
+        <button ng-click="$parent.lvlWarning = !$parent.lvlWarning" class="kuiButton kuiButton--{{$parent.lvlWarning ? 'primary' : 'basic'}}" >
+          Warning
+        </button>
+
+        <button ng-click="$parent.lvlError = !$parent.lvlError" class="kuiButton kuiButton--{{$parent.lvlError ? 'primary' : 'basic'}}">
+          Error
+        </button>
+      </div>
+
+      <button
+        aria-label="Search"
+        class="kuiLocalSearchButton"
+        ng-click="$parent.search()"
+      >
+        <span class="fa fa-search" aria-hidden="true"></span>
+      </button>
+    </div>
+
+  </div>
+</kbn-top-nav>
+
+<div class="container">
+  <div class="row kuiVerticalRhythm">
+    <div class="col-lg-12">
+      <div class="kuiMenu">
+
+        <div ng-repeat="item in log" class="kuiMenuItem" >
+          <div class="kuiEvent">
+            <div class="kuiEventSymbol">
+              <span class="kuiIcon kuiIcon--info fa-info" ng-show="item.level == 'info'" title="Info"></span>
+              <span class="kuiIcon kuiIcon--warning fa-bolt" ng-show="item.level == 'warning'" title="Warning"></span>
+              <span class="kuiIcon kuiIcon--error fa-warning" ng-show="item.level == 'error'" title="Error"></span>
+            </div>
+
+            <div class="kuiEventBody" >
+              <div class="kuiEventBody__message" ng-click="item.show = !item.show">
+                {{item.title}}
+              </div>
+
+              <div class="kuiEventBody__metadata">
+                <span title="{{item.timestamp}}">{{item.timestamp | moment}}</span><br>
+                <div ng-show="item.show" class="kuiPanelSimple kuiPanelSimple--paddingSmall" style="background: #EFEFEF;">{{item.message}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

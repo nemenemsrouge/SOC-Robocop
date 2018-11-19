@@ -1,0 +1,63 @@
+<div class="kuiModalOverlay" ng-show="modalCtrl.helpScript">
+    <div class="kuiModal" style="width: 700px">
+        <div class="kuiModalHeader">
+            <div class="kuiModalHeader__title">
+                Script usage.
+            </div>
+            <div class="kuiModalHeaderCloseButton kuiIcon fa-times" ng-click="modalCtrl.hideScriptHelp()"></div>
+        </div>
+
+        <div class="kuiModalBody">
+            <div class="kuiModalBodyText">
+                The alert allows to execute script on the server when triggered.
+            </div>
+
+            <div class="kuiModalBodyText">
+                <h4><div class="kuiIcon kuiIcon--success fa-plus"></div> Add a script</h4>
+                Check the script checkBox to enable the option. Then choose your script. The script must have a valid <strong>shebang</strong>.
+                It will be upload when saving the alert.
+            </div>
+
+            <div class="kuiModalBodyText">
+                <h4><div class="kuiIcon kuiIcon--error fa-minus"></div>  Remove the script</h4>
+                If you uncheck the box, the script will be delete when saving the alert.
+            </div>
+
+            <div class="kuiModalBodyText">
+                <h4><div class="kuiIcon kuiIcon--info fa-filter"></div>Arguments</h4>
+                The Plugin can send to the script some data in arguments. (Some argument may not be available)
+                <dl class="dl-horizontal">
+                    <dt>idAlert</dt>
+                    <dd>id Elasticsearch of the alert</dd>
+                    <dt>idHistory</dt>
+                    <dd>id Elasticsearch of the history created</dd>
+                    <dt>idCron</dt>
+                    <dd>id Elasticsearch of the cron</dd>
+                    <dt>date</dt>
+                    <dd>date of trigger</dd>
+                    <dt>alert</dt>
+                    <dd>json of the alert object base64 encoded</dd>
+                    <dt>message</dt>
+                    <dd>list of message send by the alert in JSON base64 encoded</dd>
+                    <dt>result</dt>
+                    <dd>json of the result of the request perform by alert base64 encoded</dd>
+                    <dt>status</dt>
+                    <dd>HTTP code of the request</dd>
+                    <dt>cron</dt>
+                    <dd>json of the cron object base64 encoded</dd>
+                </dl>
+                <pre style="background-color:lightgray">./script --idAlert [id] --date [data] --alert base64(JSON([alert])) ...</pre>
+            </div>
+
+                <div class="kuiModalBodyText">
+                More information in the doc.
+            </div>
+        </div>
+
+        <div class="kuiModalFooter">
+            <button class="kuiButton kuiButton--hollow" ng-click="modalCtrl.hideScriptHelp()">
+                Ok
+            </button>
+        </div>
+    </div>
+</div>
