@@ -1,7 +1,7 @@
 # Description
 
 Robocop is a Kibana plugin providing alerts to monitor events in Elasticsearch.
-By default he don't provide any access contrôle, you need to setting Kibana or Apache/Nginx filter.
+By default he doesn't provide any access control, you need to configure Kibana or Apache/Nginx filter.
 
 #  Installation
 
